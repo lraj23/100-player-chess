@@ -1,0 +1,44 @@
+body,
+html {
+	margin: 0;
+	overflow: hidden;
+}
+
+#board {
+	width: 100%;
+	height: 100%;
+}
+
+/* #board {
+	width: 5120px;
+	height: 5120px;
+	background-color: #eed;
+}
+
+.rank {
+	width: 512px;
+	height: 80px;
+	background-color: #eed;
+}
+
+.square {
+	width: 80px;
+	height: 80px;
+	display: inline-block;
+}
+
+.square.light {
+	background-color: #ddc;
+}
+
+.square.dark {
+	background-color: #795;
+}
+
+.piece {
+	width: 64px;
+	height: 64px;
+	border: 2px solid black;
+	position: relative;
+	display: inline;
+} */
