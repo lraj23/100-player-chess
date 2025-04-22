@@ -16,6 +16,7 @@ addEventListener("keydown", function (e) {
 		var stillScroll = true;
 		function scroll() {
 			scrollOffsetY += scrollAmount * (isShift ? 3 : 1);
+			updateFrame = 5;
 			if (stillScroll) requestAnimationFrame(scroll);
 		}
 		requestAnimationFrame(scroll);
@@ -29,6 +30,7 @@ addEventListener("keydown", function (e) {
 		var stillScroll = true;
 		function scroll() {
 			scrollOffsetY -= scrollAmount * (isShift ? 3 : 1);
+			updateFrame = 5;
 			if (stillScroll) requestAnimationFrame(scroll);
 		}
 		requestAnimationFrame(scroll);
@@ -42,6 +44,7 @@ addEventListener("keydown", function (e) {
 		var stillScroll = true;
 		function scroll() {
 			scrollOffsetX += scrollAmount * (isShift ? 3 : 1);
+			updateFrame = 5;
 			if (stillScroll) requestAnimationFrame(scroll);
 		}
 		requestAnimationFrame(scroll);
@@ -55,6 +58,7 @@ addEventListener("keydown", function (e) {
 		var stillScroll = true;
 		function scroll() {
 			scrollOffsetX -= scrollAmount * (isShift ? 3 : 1);
+			updateFrame = 5;
 			if (stillScroll) requestAnimationFrame(scroll);
 		}
 		requestAnimationFrame(scroll);
@@ -68,6 +72,8 @@ addEventListener("keydown", function (e) {
 
 addEventListener("wheel", function (e) {
 	var zoomOut = e.deltaY > 0;
+	// if (!zoomOut && ((squareSize * 25 / 24 > innerWidth) || (squareSize * 25 / 24 > innerHeight))) return;
+	updateFrame = 5;
 	squareSize *= 0.96 ** (zoomOut ? 1 : -1);
 	scrollOffsetX *= 0.96 ** (zoomOut ? 1 : -1);
 	scrollOffsetX += window.innerWidth / 2 / (zoomOut ? 25 : -24);
