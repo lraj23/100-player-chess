@@ -14,9 +14,7 @@ const char64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_
 const b = 8;
 
 function pickRandomWeighted(weights) {
-	var total = Object.values(weights).reduce(function (accumulator, current) {
-		return accumulator + current;
-	});
+	var total = Object.values(weights).reduce((accumulator, current) => accumulator + current);
 	var items = Object.keys(weights);
 	var random = Math.random();
 	var pickCeiling = 0;
@@ -28,9 +26,7 @@ function pickRandomWeighted(weights) {
 function weightsToPercents(weights) { // developer visualization purposes, not actually used
 	var percents = {};
 	var cleanOutput = [];
-	var total = Object.values(weights).reduce(function (accumulator, current) {
-		return accumulator + current;
-	});
+	var total = Object.values(weights).reduce((accumulator, current) => accumulator + current);
 	var items = Object.keys(weights);
 	for (let i = 0; i < items.length; i++) {
 		percents[items[i]] = ("" + ((weights[items[i]] / total) * 100).toFixed(3) + "%");
@@ -165,12 +161,12 @@ setInterval(() => {
 	io.emit('boardState', boardState);
 }, 5000);
 
-const server = http.createServer(function (req, res) {
+const server = http.createServer((req, res) => {
 	var path = url.parse(req.url).pathname;
 	if (path.slice(-1) === '/') {
 		path += 'index.html';
 	}
-	fs.readFile(__dirname + path, function (err, data) {
+	fs.readFile(__dirname + path, (err, data) => {
 		if (err) {
 			res.writeHead(404);
 			res.end();

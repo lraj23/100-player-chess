@@ -1,4 +1,4 @@
-socket.on('connect', function () {
+socket.on('connect', () => {
 	var id = socket.id;
 	var color = (char64.indexOf(id[0]) * 64 + char64.indexOf(id[1])).toString(16).toUpperCase().padStart(3, "0");
 	console.log(color);

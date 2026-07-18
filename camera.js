@@ -1,12 +1,12 @@
 var scrollOffsetX = 0, scrollOffsetY = 0, squareSize = 80;
 
 var isShift = false;
-addEventListener("keydown", function (e) {
+addEventListener("keydown", e => {
 	if (e.repeat) return;
 	var scrollAmount = 0.1 * squareSize;
 	if (e.key === "Shift") {
 		isShift = true;
-		addEventListener("keyup", function (e) {
+		addEventListener("keyup", e => {
 			if (e.key === "Shift") {
 				isShift = false;
 			}
@@ -20,7 +20,7 @@ addEventListener("keydown", function (e) {
 			if (stillScroll) requestAnimationFrame(scroll);
 		}
 		requestAnimationFrame(scroll);
-		addEventListener("keyup", function (e) {
+		addEventListener("keyup", e => {
 			if (e.key === "ArrowUp") {
 				stillScroll = false;
 			}
@@ -34,7 +34,7 @@ addEventListener("keydown", function (e) {
 			if (stillScroll) requestAnimationFrame(scroll);
 		}
 		requestAnimationFrame(scroll);
-		addEventListener("keyup", function (e) {
+		addEventListener("keyup", e => {
 			if (e.key === "ArrowDown") {
 				stillScroll = false;
 			}
@@ -48,7 +48,7 @@ addEventListener("keydown", function (e) {
 			if (stillScroll) requestAnimationFrame(scroll);
 		}
 		requestAnimationFrame(scroll);
-		addEventListener("keyup", function (e) {
+		addEventListener("keyup", e => {
 			if (e.key === "ArrowLeft") {
 				stillScroll = false;
 			}
@@ -62,7 +62,7 @@ addEventListener("keydown", function (e) {
 			if (stillScroll) requestAnimationFrame(scroll);
 		}
 		requestAnimationFrame(scroll);
-		addEventListener("keyup", function (e) {
+		addEventListener("keyup", e => {
 			if (e.key === "ArrowRight") {
 				stillScroll = false;
 			}
@@ -70,7 +70,7 @@ addEventListener("keydown", function (e) {
 	}
 });
 
-addEventListener("wheel", function (e) {
+addEventListener("wheel", e => {
 	var zoomOut = e.deltaY > 0;
 	updateFrame = 5;
 	squareSize *= 0.96 ** (zoomOut ? 1 : -1);
