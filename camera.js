@@ -4,15 +4,15 @@ var isShift = false;
 addEventListener("keydown", function (e) {
 	if (e.repeat) return;
 	var scrollAmount = 0.1 * squareSize;
-	if (e.key == "Shift") {
+	if (e.key === "Shift") {
 		isShift = true;
 		addEventListener("keyup", function (e) {
-			if (e.key == "Shift") {
+			if (e.key === "Shift") {
 				isShift = false;
 			}
 		});
 	}
-	if (e.key == "ArrowUp") {
+	if (e.key === "ArrowUp") {
 		var stillScroll = true;
 		function scroll() {
 			scrollOffsetY += scrollAmount * (isShift ? 3 : 1);
@@ -21,12 +21,12 @@ addEventListener("keydown", function (e) {
 		}
 		requestAnimationFrame(scroll);
 		addEventListener("keyup", function (e) {
-			if (e.key == "ArrowUp") {
+			if (e.key === "ArrowUp") {
 				stillScroll = false;
 			}
 		});
 	}
-	if (e.key == "ArrowDown") {
+	if (e.key === "ArrowDown") {
 		var stillScroll = true;
 		function scroll() {
 			scrollOffsetY -= scrollAmount * (isShift ? 3 : 1);
@@ -35,12 +35,12 @@ addEventListener("keydown", function (e) {
 		}
 		requestAnimationFrame(scroll);
 		addEventListener("keyup", function (e) {
-			if (e.key == "ArrowDown") {
+			if (e.key === "ArrowDown") {
 				stillScroll = false;
 			}
 		});
 	}
-	if (e.key == "ArrowLeft") {
+	if (e.key === "ArrowLeft") {
 		var stillScroll = true;
 		function scroll() {
 			scrollOffsetX += scrollAmount * (isShift ? 3 : 1);
@@ -49,12 +49,12 @@ addEventListener("keydown", function (e) {
 		}
 		requestAnimationFrame(scroll);
 		addEventListener("keyup", function (e) {
-			if (e.key == "ArrowLeft") {
+			if (e.key === "ArrowLeft") {
 				stillScroll = false;
 			}
 		});
 	}
-	if (e.key == "ArrowRight") {
+	if (e.key === "ArrowRight") {
 		var stillScroll = true;
 		function scroll() {
 			scrollOffsetX -= scrollAmount * (isShift ? 3 : 1);
@@ -63,7 +63,7 @@ addEventListener("keydown", function (e) {
 		}
 		requestAnimationFrame(scroll);
 		addEventListener("keyup", function (e) {
-			if (e.key == "ArrowRight") {
+			if (e.key === "ArrowRight") {
 				stillScroll = false;
 			}
 		});

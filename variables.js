@@ -16,4 +16,4 @@ const socket = io();
 var i, j;
 var boardState;
 var updateFrame = 60;
-const b = 20;
+const b = 8;

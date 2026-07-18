@@ -9,7 +9,7 @@ socket.on('boardState', (state) => {
 	var isKing = false;
 	for (i = 0; i < b; i++) {
 		for (j = 0; j < b; j++) {
-			if ((boardState[j][i].piece == 'king') && (boardState[j][i].owner == socket.id)) isKing = true;
+			if ((boardState[j][i].piece === 'king') && (boardState[j][i].owner === socket.id)) isKing = true;
 		}
 	}
 	if (!isKing) location.reload();

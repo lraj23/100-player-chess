@@ -44,25 +44,25 @@ function tick() {
 					&& (x1 < 0) && (innerWidth < x2) && (y1 < 0) && (innerHeight < y2)
 				)
 			) {
-				ctx.fillStyle = ((i + j) % 2 == 0 ? "#EED" : "#795");
-				if (premove.length != 0) {
-					if ((premove[1] == j) && (premove[2] == i)) {
-						ctx.fillStyle = ((i + j) % 2 == 0 ? "#FF8" : "#BC4");
+				ctx.fillStyle = ((i + j) % 2 === 0 ? "#EED" : "#795");
+				if (premove.length !== 0) {
+					if ((premove[1] === j) && (premove[2] === i)) {
+						ctx.fillStyle = ((i + j) % 2 === 0 ? "#FF8" : "#BC4");
 					}
-					if ((premove[4] == j) && (premove[5] == i)) {
-						ctx.fillStyle = ((i + j) % 2 == 0 ? "#E76" : "#D65");
+					if ((premove[4] === j) && (premove[5] === i)) {
+						ctx.fillStyle = ((i + j) % 2 === 0 ? "#E76" : "#D65");
 					}
 				}
 				if (isFloating) ctx.globalCompositeOperation = "destination-over";
 				ctx.fillRect(x1, y1, squareSize, squareSize);
 				if (isFloating) ctx.globalCompositeOperation = "source-over";
 				if (boardState) {
-					if (boardState[i][j].piece != "none") {
+					if (boardState[i][j].piece !== "none") {
 						var img = new Image();
 						img.src = "data:image/svg+xml;base64," + btoa(svg[boardState[i][j].piece].split("[COLOR]").join("#" + boardState[i][j].color));
-						ctx.drawImage(img, 0, 0, 45, 45, (selectedSquare == j * b + i && isFloating ? mouseX - squareSize / 2 : x1), (selectedSquare == j * b + i && isFloating ? mouseY - squareSize / 2 : y1), (boardState[i][j].piece == "amazon" ? squareSize * 45 / 26 : squareSize), (boardState[i][j].piece == "amazon" ? squareSize * 45 / 26 : squareSize));
+						ctx.drawImage(img, 0, 0, 45, 45, (selectedSquare === j * b + i && isFloating ? mouseX - squareSize / 2 : x1), (selectedSquare === j * b + i && isFloating ? mouseY - squareSize / 2 : y1), (boardState[i][j].piece === "amazon" ? squareSize * 45 / 26 : squareSize), (boardState[i][j].piece === "amazon" ? squareSize * 45 / 26 : squareSize));
 					};
-					if (selectedSquare != -1)
+					if (selectedSquare !== -1)
 						if (isLegalSquare(boardState[selectedSquare % b][Math.floor(selectedSquare / b)], Math.floor(selectedSquare / b), selectedSquare % b, boardState[i][j], j, i)) {
 							ctx.fillStyle = "#0004";
 							ctx.beginPath();
@@ -88,7 +88,7 @@ function tick() {
 		updateFrame = 5;
 	}
 	updateFrame--;
-	if ((timeout <= Date.now()) && (premove.length != 0)) {
+	if ((timeout <= Date.now()) && (premove.length !== 0)) {
 		selectedSquare = premove[1] * b + premove[2];
 		mouseUp({
 			clientX: (premove[4] * squareSize) + scrollOffsetX,
@@ -118,7 +118,7 @@ board.addEventListener("mousemove", (e) => {
 board.addEventListener("mousedown", (e) => {
 	var x = Math.floor((e.clientX - scrollOffsetX) / squareSize), y = Math.floor((e.clientY - scrollOffsetY) / squareSize);
 	if ((x < 0) || (x > (b - 1)) || (y < 0) || (y > (b - 1))) return;
-	if (boardState[y][x].owner == socket.id) {
+	if (boardState[y][x].owner === socket.id) {
 		selectedSquare = x * b + y;
 		isFloating = true;
 		updateFrame = 5;
@@ -126,8 +126,8 @@ board.addEventListener("mousedown", (e) => {
 });
 function mouseUp(e) {
 	var x = Math.floor((e.clientX - scrollOffsetX) / squareSize), y = Math.floor((e.clientY - scrollOffsetY) / squareSize);
-	if (selectedSquare == -1) { updateFrame = 5; return; }
-	if ((selectedSquare == x * b + y) && (!e.isPremove)) { isFloating = false; updateFrame = 5; return; }
+	if (selectedSquare === -1) { updateFrame = 5; return; }
+	if ((selectedSquare === x * b + y) && (!e.isPremove)) { isFloating = false; updateFrame = 5; return; }
 	if ((x < 0) || (x > (b - 1)) || (y < 0) || (y > (b - 1))) { selectedSquare = -1; updateFrame = 5; return; }
 	var selectedX = selectedSquare % b, selectedY = Math.floor(selectedSquare / b);
 	if (timeout > Date.now()) {
@@ -144,7 +144,7 @@ function mouseUp(e) {
 			color: boardState[selectedX][selectedY].color,
 			owner: boardState[selectedX][selectedY].owner
 		};
-		boardState[selectedX][selectedY] = (newSpot.piece == "none" || newSpot.owner != "" ? {
+		boardState[selectedX][selectedY] = (newSpot.piece === "none" || newSpot.owner !== "" ? {
 			piece: "none",
 			color: "FFF",
 			owner: ""
@@ -159,8 +159,8 @@ function mouseUp(e) {
 	if (isLegalSquare(boardState[selectedX][selectedY], selectedY, selectedX, boardState[y][x], x, y))
 		if (isLegalSquare(boardState[selectedX][selectedY], selectedY, selectedX, boardState[y][x], x, y)[0].toUpperCase() === "O") {
 			console.log("castle");
-			var castle = isLegalSquare(boardState[selectedX][selectedY], selectedY, selectedX, boardState[y][x], x, y)[0];
-			var castleSign = (castle == castle.toUpperCase() ? 1 : -1);
+			var castle = isLegalSquare(boardState[selectedX][selectedY], selectedY, selectedX, boardState[y][x], x, y);
+			var castleSign = (castle === castle.toUpperCase() ? 1 : -1);
 			boardState[y][x] = {
 				piece: boardState[selectedX][selectedY].piece,
 				color: boardState[selectedX][selectedY].color,
@@ -168,7 +168,7 @@ function mouseUp(e) {
 			};
 			boardState[selectedX][selectedY + castleSign] = {
 				piece: boardState[selectedX][selectedY + castleSign * (castle.split("-").length + 1)].piece,
-				color: boardState[selectedX][selectedY + castleSign * (castle.split("-").length + 1)].color,
+				color: boardState[selectedX][selectedY].color,
 				owner: boardState[selectedX][selectedY].owner
 			};
 			boardState[selectedX][selectedY] = {
@@ -190,70 +190,68 @@ function mouseUp(e) {
 board.addEventListener("mouseup", mouseUp);
 
 function isLegalSquare(piece1, x1, y1, piece2, x2, y2) {
-	if (piece1.owner != socket.id || (piece2.owner == socket.id)) return false;
+	if (piece1.owner !== socket.id || (piece2.owner === socket.id)) return false;
 	var dx = Math.abs(x2 - x1), dy = Math.abs(y2 - y1);
 	switch (piece1.piece) {
 		case "pawn":
-			if (((dx + dy == 1) && (piece2.piece == "none")) || (dx * dy == 1) && (piece2.piece != "none")) return true;
-			return false;
+			return ((dx + dy === 1) && (piece2.piece === "none")) || (dx * dy === 1) && (piece2.piece !== "none");
 		case "knight":
-			if ((dx + dy == 3) && (dx * dy == 2)) return true;
-			return false;
+			return ((dx + dy === 3) && (dx * dy === 2));
 		case "bishop":
-			if (Math.abs(dy / dx) != 1) return false;
+			if (dx !== dy) return false;
 			var bishopI, signOfX = (x2 - x1) / dx, signOfY = (y2 - y1) / dy;
 			for (bishopI = 1; bishopI < dx; bishopI++) {
-				if (boardState[y1 + bishopI * signOfY][x1 + bishopI * signOfX].piece != "none") return false;
+				if (boardState[y1 + bishopI * signOfY][x1 + bishopI * signOfX].piece !== "none") return false;
 			}
 			return true;
 		case "rook":
-			if ((dy > 0) && (dx > 0)) return false;
-			var rookI, signOfX = (dx == 0 ? 0 : (x2 - x1) / dx), signOfY = (dy == 0 ? 0 : (y2 - y1) / dy);
+			if (dx * dy !== 0) return false;
+			var rookI, signOfX = (dx === 0 ? 0 : (x2 - x1) / dx), signOfY = (dy === 0 ? 0 : (y2 - y1) / dy);
 			for (rookI = 1; rookI < dx + dy; rookI++) {
-				if (boardState[y1 + rookI * signOfY][x1 + rookI * signOfX].piece != "none") return false;
+				if (boardState[y1 + rookI * signOfY][x1 + rookI * signOfX].piece !== "none") return false;
 			}
 			return true;
 		case "queen":
-			if ((dy > 0) && (dx > 0) && (Math.abs(dy / dx) != 1)) return false;
-			var queenI, signOfX = (dx == 0 ? 0 : (x2 - x1) / dx), signOfY = (dy == 0 ? 0 : (y2 - y1) / dy);
-			for (queenI = 1; queenI < (Math.abs(dy / dx) == 1 ? dx : dx + dy); queenI++) {
-				if (boardState[y1 + queenI * signOfY][x1 + queenI * signOfX].piece != "none") return false;
+			if ((dx * dy !== 0) && (dx !== dy)) return false;
+			var queenI, signOfX = (dx === 0 ? 0 : (x2 - x1) / dx), signOfY = (dy === 0 ? 0 : (y2 - y1) / dy);
+			for (queenI = 1; queenI < (dy / dx === 1 ? dx : dx + dy); queenI++) {
+				if (boardState[y1 + queenI * signOfY][x1 + queenI * signOfX].piece !== "none") return false;
 			}
 			return true;
 		case "king":
-			if ((dx <= 1) && (dy <= 1) && (dx + dy > 0)) return true;
-			var signOfX = (dx == 0 ? 0 : (x2 - x1) / dx);
+			if ((dx <= 1) && (dy <= 1)) return true;
+			var signOfX = (dx === 0 ? 0 : (x2 - x1) / dx);
+			if ((dx !== 2) || (dy !== 0) || (boardState[y1][x1 + signOfX]?.piece !== "none") || (piece2.piece !== "none")) return false;
 			// console.log(dx, signOfX);
-			if ((dx == 2) && (dy == 0) && (boardState[y1][x1 + signOfX]?.piece == "none") && (piece2.piece == "none") && (boardState[y1][x1 + signOfX * 3]?.piece == "rook")) return (signOfX == -1 ? "o-o" : "O-O");
-			if ((dx == 2) && (dy == 0) && (boardState[y1][x1 + signOfX]?.piece == "none") && (piece2.piece == "none") && (boardState[y1][x1 + signOfX * 3]?.piece == "none") && (boardState[y1][x1 + signOfX * 4]?.piece == "rook")) return (signOfX == -1 ? "o-o-o" : "O-O-O");
+			let off3 = boardState[y1][x1 + signOfX * 3], off4 = boardState[y1][x1 + signOfX * 4];
+			if ((off3?.piece === "rook") && ((off3?.owner === piece1.owner) || (off3?.owner === ""))) return (signOfX === -1 ? "o-o" : "O-O");
+			if ((off3?.piece === "none") && (off4?.piece === "rook") && ((off4?.owner === piece1.owner) || (off4.owner === ""))) return (signOfX === -1 ? "o-o-o" : "O-O-O");
 			return false;
 		case "archbishop":
-			if ((dx + dy == 3) && (dx * dy == 2)) return true;
-			if (Math.abs(dy / dx) != 1) return false;
+			if ((dx + dy === 3) && (dx * dy === 2)) return true;
+			if (dx !== dy) return false;
 			var archbishopI, signOfX = (x2 - x1) / dx, signOfY = (y2 - y1) / dy;
 			for (archbishopI = 1; archbishopI < dx; archbishopI++) {
-				if (boardState[y1 + archbishopI * signOfY][x1 + archbishopI * signOfX].piece != "none") return false;
+				if (boardState[y1 + archbishopI * signOfY][x1 + archbishopI * signOfX].piece !== "none") return false;
 			}
 			return true;
 		case "chancellor":
-			if ((dx + dy == 3) && (dx * dy == 2)) return true;
+			if ((dx + dy === 3) && (dx * dy === 2)) return true;
 			if ((dy > 0) && (dx > 0)) return false;
-			var chancellorI, signOfX = (dx == 0 ? 0 : (x2 - x1) / dx), signOfY = (dy == 0 ? 0 : (y2 - y1) / dy);
+			var chancellorI, signOfX = (dx === 0 ? 0 : (x2 - x1) / dx), signOfY = (dy === 0 ? 0 : (y2 - y1) / dy);
 			for (chancellorI = 1; chancellorI < dx + dy; chancellorI++) {
-				if (boardState[y1 + chancellorI * signOfY][x1 + chancellorI * signOfX].piece != "none") return false;
+				if (boardState[y1 + chancellorI * signOfY][x1 + chancellorI * signOfX].piece !== "none") return false;
 			}
 			return true;
 		case "amazon":
-			if ((dx + dy == 3) && (dx * dy == 2)) return true;
-			if ((dy > 0) && (dx > 0) && (Math.abs(dy / dx) != 1)) return false;
+			if ((dx + dy === 3) && (dx * dy === 2)) return true;
+			if ((dy > 0) && (dx > 0) && (dx !== dy)) return false;
 			var amazonI, signOfX = (dx == 0 ? 0 : (x2 - x1) / dx), signOfY = (dy == 0 ? 0 : (y2 - y1) / dy);
-			for (amazonI = 1; amazonI < (Math.abs(dy / dx) == 1 ? dx : dx + dy); amazonI++) {
-				if (boardState[y1 + amazonI * signOfY][x1 + amazonI * signOfX].piece != "none") return false;
+			for (amazonI = 1; amazonI < (dx == dy ? dx : dx + dy); amazonI++) {
+				if (boardState[y1 + amazonI * signOfY][x1 + amazonI * signOfX].piece !== "none") return false;
 			}
 			return true;
 		case "general":
-			if ((dx + dy == 3) && (dx * dy == 2)) return true;
-			if ((dx <= 1) && (dy <= 1) && (dx + dy > 0)) return true;
-			return false;
+			return ((dx + dy == 3) && (dx * dy == 2)) || ((dx <= 1) && (dy <= 1));
 	}
 }

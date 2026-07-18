@@ -11,7 +11,7 @@ const probabilities = {
 	none: 800
 };
 const char64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_".split("");
-const b = 20;
+const b = 8;
 
 function pickRandomWeighted(weights) {
 	var total = Object.values(weights).reduce(function (accumulator, current) {
@@ -47,98 +47,98 @@ const pathfunc = require('path');
 const socketio = require('socket.io');
 var i, j;
 var boardState = [];
-// boardState = [
-// 	[
-// 		{
-// 			piece: "rook",
-// 			color: "FFF",
-// 			owner: ""
-// 		},
-// 		{
-// 			piece: "none",
-// 			color: "FFF",
-// 			owner: ""
-// 		},
-// 		{
-// 			piece: "none",
-// 			color: "FFF",
-// 			owner: ""
-// 		},
-// 		{
-// 			piece: "none",
-// 			color: "FFF",
-// 			owner: ""
-// 		},
-// 		{
-// 			piece: "none",
-// 			color: "FFF",
-// 			owner: ""
-// 		},
-// 		{
-// 			piece: "none",
-// 			color: "FFF",
-// 			owner: ""
-// 		},
-// 		{
-// 			piece: "none",
-// 			color: "FFF",
-// 			owner: ""
-// 		},
-// 		{
-// 			piece: "rook",
-// 			color: "FFF",
-// 			owner: ""
-// 		},
-// 	],
-// 	[{ piece: "pawn", color: "FFF", owner: "" }, { piece: "pawn", color: "FFF", owner: "" }, { piece: "pawn", color: "FFF", owner: "" }, { piece: "pawn", color: "FFF", owner: "" }, { piece: "pawn", color: "FFF", owner: "" }, { piece: "pawn", color: "FFF", owner: "" }, { piece: "pawn", color: "FFF", owner: "" }, { piece: "pawn", color: "FFF", owner: "" },],
-// 	[{ piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }],
-// 	[{ piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }],
-// 	[{ piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }],
-// 	[{ piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }],
-// 	[{ piece: "pawn", color: "FFF", owner: "" }, { piece: "pawn", color: "FFF", owner: "" }, { piece: "pawn", color: "FFF", owner: "" }, { piece: "pawn", color: "FFF", owner: "" }, { piece: "pawn", color: "FFF", owner: "" }, { piece: "pawn", color: "FFF", owner: "" }, { piece: "pawn", color: "FFF", owner: "" }, { piece: "pawn", color: "FFF", owner: "" },],
-// 	[
-// 		{
-// 			piece: "rook",
-// 			color: "FFF",
-// 			owner: ""
-// 		},
-// 		{
-// 			piece: "none",
-// 			color: "FFF",
-// 			owner: ""
-// 		},
-// 		{
-// 			piece: "none",
-// 			color: "FFF",
-// 			owner: ""
-// 		},
-// 		{
-// 			piece: "none",
-// 			color: "FFF",
-// 			owner: ""
-// 		},
-// 		{
-// 			piece: "none",
-// 			color: "FFF",
-// 			owner: ""
-// 		},
-// 		{
-// 			piece: "none",
-// 			color: "FFF",
-// 			owner: ""
-// 		},
-// 		{
-// 			piece: "none",
-// 			color: "FFF",
-// 			owner: ""
-// 		},
-// 		{
-// 			piece: "rook",
-// 			color: "FFF",
-// 			owner: ""
-// 		},
-// 	],
-// ];
+boardState = [
+	[
+		{
+			piece: "rook",
+			color: "FFF",
+			owner: ""
+		},
+		{
+			piece: "none",
+			color: "FFF",
+			owner: ""
+		},
+		{
+			piece: "none",
+			color: "FFF",
+			owner: ""
+		},
+		{
+			piece: "none",
+			color: "FFF",
+			owner: ""
+		},
+		{
+			piece: "none",
+			color: "FFF",
+			owner: ""
+		},
+		{
+			piece: "none",
+			color: "FFF",
+			owner: ""
+		},
+		{
+			piece: "none",
+			color: "FFF",
+			owner: ""
+		},
+		{
+			piece: "rook",
+			color: "FFF",
+			owner: ""
+		},
+	],
+	[{ piece: "pawn", color: "FFF", owner: "" }, { piece: "pawn", color: "FFF", owner: "" }, { piece: "pawn", color: "FFF", owner: "" }, { piece: "pawn", color: "FFF", owner: "" }, { piece: "pawn", color: "FFF", owner: "" }, { piece: "pawn", color: "FFF", owner: "" }, { piece: "pawn", color: "FFF", owner: "" }, { piece: "pawn", color: "FFF", owner: "" },],
+	[{ piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }],
+	[{ piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }],
+	[{ piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }],
+	[{ piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }],
+	[{ piece: "pawn", color: "FFF", owner: "" }, { piece: "pawn", color: "FFF", owner: "" }, { piece: "pawn", color: "FFF", owner: "" }, { piece: "pawn", color: "FFF", owner: "" }, { piece: "pawn", color: "FFF", owner: "" }, { piece: "pawn", color: "FFF", owner: "" }, { piece: "pawn", color: "FFF", owner: "" }, { piece: "pawn", color: "FFF", owner: "" },],
+	[
+		{
+			piece: "rook",
+			color: "FFF",
+			owner: ""
+		},
+		{
+			piece: "none",
+			color: "FFF",
+			owner: ""
+		},
+		{
+			piece: "none",
+			color: "FFF",
+			owner: ""
+		},
+		{
+			piece: "none",
+			color: "FFF",
+			owner: ""
+		},
+		{
+			piece: "none",
+			color: "FFF",
+			owner: ""
+		},
+		{
+			piece: "none",
+			color: "FFF",
+			owner: ""
+		},
+		{
+			piece: "none",
+			color: "FFF",
+			owner: ""
+		},
+		{
+			piece: "rook",
+			color: "FFF",
+			owner: ""
+		},
+	],
+];
 for (i = 0; i < b; i++) {
 	var dimension = [];
 	for (j = 0; j < b; j++) {
@@ -152,7 +152,7 @@ for (i = 0; i < b; i++) {
 }
 setInterval(() => {
 	var pieceSpawn = Math.floor(Math.random() * b * b), pieces = 0;
-	while (boardState[Math.floor(pieceSpawn / b)][pieceSpawn % b].piece != "none") {
+	while (boardState[Math.floor(pieceSpawn / b)][pieceSpawn % b].piece !== "none") {
 		pieceSpawn = Math.floor(Math.random() * b * b);
 		pieces++;
 	}
@@ -167,7 +167,7 @@ setInterval(() => {
 
 const server = http.createServer(function (req, res) {
 	var path = url.parse(req.url).pathname;
-	if (path.slice(-1) == '/') {
+	if (path.slice(-1) === '/') {
 		path += 'index.html';
 	}
 	fs.readFile(__dirname + path, function (err, data) {
@@ -176,8 +176,8 @@ const server = http.createServer(function (req, res) {
 			res.end();
 		} else {
 			var type = 'text/' + pathfunc.extname(path).substring(1);
-			if (type == 'text/js') type = 'text/javascript';
-			if (type == 'text/svg') type = 'image/svg+xml';
+			if (type === 'text/js') type = 'text/javascript';
+			if (type === 'text/svg') type = 'image/svg+xml';
 			res.writeHead(200, { 'Content-Type': type });
 			res.end(data);
 		}
@@ -190,9 +190,9 @@ io.on('connection', (socket) => {
 		for (i = 0; i < b; i++) {
 			for (j = 0; j < b; j++) {
 				var square = boardState[i][j];
-				if (square.owner == socket.id) {
+				if (square.owner === socket.id) {
 					boardState[i][j] = {
-						"piece": (square.piece == "king" ? "none" : square.piece),
+						"piece": (square.piece === "king" ? "none" : square.piece),
 						"color": "FFF",
 						"owner": ""
 					};
@@ -206,7 +206,7 @@ io.on('connection', (socket) => {
 		io.emit('boardState', boardState);
 	});
 	var kingSpawn = Math.floor(Math.random() * b * b);
-	while (boardState[Math.floor(kingSpawn / b)][kingSpawn % b].piece != "none") {
+	while (boardState[Math.floor(kingSpawn / b)][kingSpawn % b].piece !== "none") {
 		kingSpawn = Math.floor(Math.random() * b * b);
 	}
 	boardState[Math.floor(kingSpawn / b)][kingSpawn % b] = {
