@@ -72,7 +72,6 @@ addEventListener("keydown", function (e) {
 
 addEventListener("wheel", function (e) {
 	var zoomOut = e.deltaY > 0;
-	// if (!zoomOut && ((squareSize * 25 / 24 > innerWidth) || (squareSize * 25 / 24 > innerHeight))) return;
 	updateFrame = 5;
 	squareSize *= 0.96 ** (zoomOut ? 1 : -1);
 	scrollOffsetX *= 0.96 ** (zoomOut ? 1 : -1);

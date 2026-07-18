@@ -1,12 +1,17 @@
 const probabilities = {
-	pawn: 6,
-	knight: 5,
-	bishop: 3.5,
-	rook: 3.5,
-	queen: 0.5,
-	none: 100
+	amazon: 0.5,
+	general: 2.5,
+	queen: 5,
+	archbishop: 5,
+	chancellor: 5,
+	bishop: 36,
+	rook: 36,
+	knight: 50,
+	pawn: 60,
+	none: 800
 };
 const char64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_".split("");
+const b = 20;
 
 function pickRandomWeighted(weights) {
 	var total = Object.values(weights).reduce(function (accumulator, current) {
@@ -42,9 +47,101 @@ const pathfunc = require('path');
 const socketio = require('socket.io');
 var i, j;
 var boardState = [];
-for (i = 0; i < 64; i++) {
+// boardState = [
+// 	[
+// 		{
+// 			piece: "rook",
+// 			color: "FFF",
+// 			owner: ""
+// 		},
+// 		{
+// 			piece: "none",
+// 			color: "FFF",
+// 			owner: ""
+// 		},
+// 		{
+// 			piece: "none",
+// 			color: "FFF",
+// 			owner: ""
+// 		},
+// 		{
+// 			piece: "none",
+// 			color: "FFF",
+// 			owner: ""
+// 		},
+// 		{
+// 			piece: "none",
+// 			color: "FFF",
+// 			owner: ""
+// 		},
+// 		{
+// 			piece: "none",
+// 			color: "FFF",
+// 			owner: ""
+// 		},
+// 		{
+// 			piece: "none",
+// 			color: "FFF",
+// 			owner: ""
+// 		},
+// 		{
+// 			piece: "rook",
+// 			color: "FFF",
+// 			owner: ""
+// 		},
+// 	],
+// 	[{ piece: "pawn", color: "FFF", owner: "" }, { piece: "pawn", color: "FFF", owner: "" }, { piece: "pawn", color: "FFF", owner: "" }, { piece: "pawn", color: "FFF", owner: "" }, { piece: "pawn", color: "FFF", owner: "" }, { piece: "pawn", color: "FFF", owner: "" }, { piece: "pawn", color: "FFF", owner: "" }, { piece: "pawn", color: "FFF", owner: "" },],
+// 	[{ piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }],
+// 	[{ piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }],
+// 	[{ piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }],
+// 	[{ piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }],
+// 	[{ piece: "pawn", color: "FFF", owner: "" }, { piece: "pawn", color: "FFF", owner: "" }, { piece: "pawn", color: "FFF", owner: "" }, { piece: "pawn", color: "FFF", owner: "" }, { piece: "pawn", color: "FFF", owner: "" }, { piece: "pawn", color: "FFF", owner: "" }, { piece: "pawn", color: "FFF", owner: "" }, { piece: "pawn", color: "FFF", owner: "" },],
+// 	[
+// 		{
+// 			piece: "rook",
+// 			color: "FFF",
+// 			owner: ""
+// 		},
+// 		{
+// 			piece: "none",
+// 			color: "FFF",
+// 			owner: ""
+// 		},
+// 		{
+// 			piece: "none",
+// 			color: "FFF",
+// 			owner: ""
+// 		},
+// 		{
+// 			piece: "none",
+// 			color: "FFF",
+// 			owner: ""
+// 		},
+// 		{
+// 			piece: "none",
+// 			color: "FFF",
+// 			owner: ""
+// 		},
+// 		{
+// 			piece: "none",
+// 			color: "FFF",
+// 			owner: ""
+// 		},
+// 		{
+// 			piece: "none",
+// 			color: "FFF",
+// 			owner: ""
+// 		},
+// 		{
+// 			piece: "rook",
+// 			color: "FFF",
+// 			owner: ""
+// 		},
+// 	],
+// ];
+for (i = 0; i < b; i++) {
 	var dimension = [];
-	for (j = 0; j < 64; j++) {
+	for (j = 0; j < b; j++) {
 		dimension.push({
 			"piece": pickRandomWeighted(probabilities),
 			"color": "FFF",
@@ -53,6 +150,20 @@ for (i = 0; i < 64; i++) {
 	}
 	boardState.push(dimension);
 }
+setInterval(() => {
+	var pieceSpawn = Math.floor(Math.random() * b * b), pieces = 0;
+	while (boardState[Math.floor(pieceSpawn / b)][pieceSpawn % b].piece != "none") {
+		pieceSpawn = Math.floor(Math.random() * b * b);
+		pieces++;
+	}
+	if (pieces < (3 * b / 4))
+		boardState[Math.floor(pieceSpawn / b)][pieceSpawn % b] = {
+			piece: pickRandomWeighted(probabilities),
+			color: "FFF",
+			owner: ""
+		};
+	io.emit('boardState', boardState);
+}, 5000);
 
 const server = http.createServer(function (req, res) {
 	var path = url.parse(req.url).pathname;
@@ -75,10 +186,9 @@ const server = http.createServer(function (req, res) {
 
 const io = new socketio.Server(server);
 io.on('connection', (socket) => {
-	io.emit('boardState', boardState);
 	socket.on('disconnect', () => {
-		for (i = 0; i < 64; i++) {
-			for (j = 0; j < 64; j++) {
+		for (i = 0; i < b; i++) {
+			for (j = 0; j < b; j++) {
 				var square = boardState[i][j];
 				if (square.owner == socket.id) {
 					boardState[i][j] = {
@@ -91,11 +201,15 @@ io.on('connection', (socket) => {
 			}
 		}
 	});
-	var kingSpawn = Math.floor(Math.random() * 4096);
-	while (boardState[Math.floor(kingSpawn / 64)][kingSpawn % 64].piece != "none") {
-		kingSpawn = Math.floor(Math.random() * 4096);
+	socket.on('boardState', (stateOfBoard) => {
+		boardState = stateOfBoard;
+		io.emit('boardState', boardState);
+	});
+	var kingSpawn = Math.floor(Math.random() * b * b);
+	while (boardState[Math.floor(kingSpawn / b)][kingSpawn % b].piece != "none") {
+		kingSpawn = Math.floor(Math.random() * b * b);
 	}
-	boardState[Math.floor(kingSpawn / 64)][kingSpawn % 64] = {
+	boardState[Math.floor(kingSpawn / b)][kingSpawn % b] = {
 		piece: "king",
 		color: (char64.indexOf(socket.id[0]) * 64 + char64.indexOf(socket.id[1])).toString(16).toUpperCase().padStart(3, "0"),
 		owner: socket.id
