@@ -1,9 +1,9 @@
-var scrollOffsetX = 0, scrollOffsetY = 0, squareSize = 80;
+let scrollOffsetX = 0, scrollOffsetY = 0, squareSize = 80;
 
-var isShift = false;
+let isShift = false;
 addEventListener("keydown", e => {
 	if (e.repeat) return;
-	var scrollAmount = 0.1 * squareSize;
+	let scrollAmount = 0.1 * squareSize;
 	if (e.key === "Shift") {
 		isShift = true;
 		addEventListener("keyup", e => {
@@ -13,7 +13,7 @@ addEventListener("keydown", e => {
 		});
 	}
 	if (e.key === "ArrowUp") {
-		var stillScroll = true;
+		let stillScroll = true;
 		function scroll() {
 			scrollOffsetY += scrollAmount * (isShift ? 3 : 1);
 			updateFrame = 5;
@@ -27,7 +27,7 @@ addEventListener("keydown", e => {
 		});
 	}
 	if (e.key === "ArrowDown") {
-		var stillScroll = true;
+		let stillScroll = true;
 		function scroll() {
 			scrollOffsetY -= scrollAmount * (isShift ? 3 : 1);
 			updateFrame = 5;
@@ -41,7 +41,7 @@ addEventListener("keydown", e => {
 		});
 	}
 	if (e.key === "ArrowLeft") {
-		var stillScroll = true;
+		let stillScroll = true;
 		function scroll() {
 			scrollOffsetX += scrollAmount * (isShift ? 3 : 1);
 			updateFrame = 5;
@@ -55,7 +55,7 @@ addEventListener("keydown", e => {
 		});
 	}
 	if (e.key === "ArrowRight") {
-		var stillScroll = true;
+		let stillScroll = true;
 		function scroll() {
 			scrollOffsetX -= scrollAmount * (isShift ? 3 : 1);
 			updateFrame = 5;
@@ -71,7 +71,7 @@ addEventListener("keydown", e => {
 });
 
 addEventListener("wheel", e => {
-	var zoomOut = e.deltaY > 0;
+	let zoomOut = e.deltaY > 0;
 	updateFrame = 5;
 	squareSize *= 0.96 ** (zoomOut ? 1 : -1);
 	scrollOffsetX *= 0.96 ** (zoomOut ? 1 : -1);

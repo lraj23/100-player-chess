@@ -1,33 +1,46 @@
-const probabilities = {
+const probabilities1 = {
 	amazon: 0.5,
-	general: 2.5,
-	queen: 5,
-	archbishop: 5,
-	chancellor: 5,
-	bishop: 36,
-	rook: 36,
-	knight: 50,
-	pawn: 60,
-	none: 800
+	general: 0.7,
+	queen: 0.8,
+	archbishop: 2,
+	chancellor: 2,
+	bishop: 3,
+	rook: 3,
+	knight: 4,
+	pawn: 4,
+	none: 80
 };
+const probabilities2 = {
+	amazon: 1,
+	general: 5,
+	queen: 10,
+	archbishop: 10,
+	chancellor: 10,
+	bishop: 72,
+	rook: 72,
+	knight: 100,
+	pawn: 120,
+	none: 1600
+};
+const probabilities = probabilities1;
 const char64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_".split("");
-const b = 8;
+const b = 64;
 
 function pickRandomWeighted(weights) {
-	var total = Object.values(weights).reduce((accumulator, current) => accumulator + current);
-	var items = Object.keys(weights);
-	var random = Math.random();
-	var pickCeiling = 0;
+	let total = Object.values(weights).reduce((accumulator, current) => accumulator + current);
+	let items = Object.keys(weights);
+	let random = Math.random();
+	let pickCeiling = 0;
 	for (let i = 0; i < items.length; i++) {
 		pickCeiling += (weights[items[i]] / total);
 		if (random < pickCeiling) return items[i];
 	}
 }
 function weightsToPercents(weights) { // developer visualization purposes, not actually used
-	var percents = {};
-	var cleanOutput = [];
-	var total = Object.values(weights).reduce((accumulator, current) => accumulator + current);
-	var items = Object.keys(weights);
+	let percents = {};
+	let cleanOutput = [];
+	let total = Object.values(weights).reduce((accumulator, current) => accumulator + current);
+	let items = Object.keys(weights);
 	for (let i = 0; i < items.length; i++) {
 		percents[items[i]] = ("" + ((weights[items[i]] / total) * 100).toFixed(3) + "%");
 		let itemName = items[i];
@@ -41,103 +54,102 @@ const url = require('url');
 const fs = require('fs');
 const pathfunc = require('path');
 const socketio = require('socket.io');
-var i, j;
-var boardState = [];
-boardState = [
-	[
-		{
-			piece: "rook",
-			color: "FFF",
-			owner: ""
-		},
-		{
-			piece: "none",
-			color: "FFF",
-			owner: ""
-		},
-		{
-			piece: "none",
-			color: "FFF",
-			owner: ""
-		},
-		{
-			piece: "none",
-			color: "FFF",
-			owner: ""
-		},
-		{
-			piece: "none",
-			color: "FFF",
-			owner: ""
-		},
-		{
-			piece: "none",
-			color: "FFF",
-			owner: ""
-		},
-		{
-			piece: "none",
-			color: "FFF",
-			owner: ""
-		},
-		{
-			piece: "rook",
-			color: "FFF",
-			owner: ""
-		},
-	],
-	[{ piece: "pawn", color: "FFF", owner: "" }, { piece: "pawn", color: "FFF", owner: "" }, { piece: "pawn", color: "FFF", owner: "" }, { piece: "pawn", color: "FFF", owner: "" }, { piece: "pawn", color: "FFF", owner: "" }, { piece: "pawn", color: "FFF", owner: "" }, { piece: "pawn", color: "FFF", owner: "" }, { piece: "pawn", color: "FFF", owner: "" },],
-	[{ piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }],
-	[{ piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }],
-	[{ piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }],
-	[{ piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }],
-	[{ piece: "pawn", color: "FFF", owner: "" }, { piece: "pawn", color: "FFF", owner: "" }, { piece: "pawn", color: "FFF", owner: "" }, { piece: "pawn", color: "FFF", owner: "" }, { piece: "pawn", color: "FFF", owner: "" }, { piece: "pawn", color: "FFF", owner: "" }, { piece: "pawn", color: "FFF", owner: "" }, { piece: "pawn", color: "FFF", owner: "" },],
-	[
-		{
-			piece: "rook",
-			color: "FFF",
-			owner: ""
-		},
-		{
-			piece: "none",
-			color: "FFF",
-			owner: ""
-		},
-		{
-			piece: "none",
-			color: "FFF",
-			owner: ""
-		},
-		{
-			piece: "none",
-			color: "FFF",
-			owner: ""
-		},
-		{
-			piece: "none",
-			color: "FFF",
-			owner: ""
-		},
-		{
-			piece: "none",
-			color: "FFF",
-			owner: ""
-		},
-		{
-			piece: "none",
-			color: "FFF",
-			owner: ""
-		},
-		{
-			piece: "rook",
-			color: "FFF",
-			owner: ""
-		},
-	],
-];
-for (i = 0; i < b; i++) {
-	var dimension = [];
-	for (j = 0; j < b; j++) {
+let boardState = [];
+// boardState = [
+// 	[
+// 		{
+// 			piece: "rook",
+// 			color: "FFF",
+// 			owner: ""
+// 		},
+// 		{
+// 			piece: "none",
+// 			color: "FFF",
+// 			owner: ""
+// 		},
+// 		{
+// 			piece: "none",
+// 			color: "FFF",
+// 			owner: ""
+// 		},
+// 		{
+// 			piece: "none",
+// 			color: "FFF",
+// 			owner: ""
+// 		},
+// 		{
+// 			piece: "none",
+// 			color: "FFF",
+// 			owner: ""
+// 		},
+// 		{
+// 			piece: "none",
+// 			color: "FFF",
+// 			owner: ""
+// 		},
+// 		{
+// 			piece: "none",
+// 			color: "FFF",
+// 			owner: ""
+// 		},
+// 		{
+// 			piece: "rook",
+// 			color: "FFF",
+// 			owner: ""
+// 		},
+// 	],
+// 	[{ piece: "pawn", color: "FFF", owner: "" }, { piece: "pawn", color: "FFF", owner: "" }, { piece: "pawn", color: "FFF", owner: "" }, { piece: "pawn", color: "FFF", owner: "" }, { piece: "pawn", color: "FFF", owner: "" }, { piece: "pawn", color: "FFF", owner: "" }, { piece: "pawn", color: "FFF", owner: "" }, { piece: "pawn", color: "FFF", owner: "" },],
+// 	[{ piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }],
+// 	[{ piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }],
+// 	[{ piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }],
+// 	[{ piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }, { piece: "none", color: "FFF", owner: "" }],
+// 	[{ piece: "pawn", color: "FFF", owner: "" }, { piece: "pawn", color: "FFF", owner: "" }, { piece: "pawn", color: "FFF", owner: "" }, { piece: "pawn", color: "FFF", owner: "" }, { piece: "pawn", color: "FFF", owner: "" }, { piece: "pawn", color: "FFF", owner: "" }, { piece: "pawn", color: "FFF", owner: "" }, { piece: "pawn", color: "FFF", owner: "" },],
+// 	[
+// 		{
+// 			piece: "rook",
+// 			color: "FFF",
+// 			owner: ""
+// 		},
+// 		{
+// 			piece: "none",
+// 			color: "FFF",
+// 			owner: ""
+// 		},
+// 		{
+// 			piece: "none",
+// 			color: "FFF",
+// 			owner: ""
+// 		},
+// 		{
+// 			piece: "none",
+// 			color: "FFF",
+// 			owner: ""
+// 		},
+// 		{
+// 			piece: "none",
+// 			color: "FFF",
+// 			owner: ""
+// 		},
+// 		{
+// 			piece: "none",
+// 			color: "FFF",
+// 			owner: ""
+// 		},
+// 		{
+// 			piece: "none",
+// 			color: "FFF",
+// 			owner: ""
+// 		},
+// 		{
+// 			piece: "rook",
+// 			color: "FFF",
+// 			owner: ""
+// 		},
+// 	],
+// ];
+for (let i = 0; i < b; i++) {
+	let dimension = [];
+	for (let j = 0; j < b; j++) {
 		dimension.push({
 			"piece": pickRandomWeighted(probabilities),
 			"color": "FFF",
@@ -147,7 +159,7 @@ for (i = 0; i < b; i++) {
 	boardState.push(dimension);
 }
 setInterval(() => {
-	var pieceSpawn = Math.floor(Math.random() * b * b), pieces = 0;
+	let pieceSpawn = Math.floor(Math.random() * b * b), pieces = 0;
 	while (boardState[Math.floor(pieceSpawn / b)][pieceSpawn % b].piece !== "none") {
 		pieceSpawn = Math.floor(Math.random() * b * b);
 		pieces++;
@@ -162,16 +174,14 @@ setInterval(() => {
 }, 5000);
 
 const server = http.createServer((req, res) => {
-	var path = url.parse(req.url).pathname;
-	if (path.slice(-1) === '/') {
-		path += 'index.html';
-	}
+	let path = url.parse(req.url).pathname;
+	if (path.slice(-1) === '/') path += 'index.html';
 	fs.readFile(__dirname + path, (err, data) => {
 		if (err) {
 			res.writeHead(404);
 			res.end();
 		} else {
-			var type = 'text/' + pathfunc.extname(path).substring(1);
+			let type = 'text/' + pathfunc.extname(path).substring(1);
 			if (type === 'text/js') type = 'text/javascript';
 			if (type === 'text/svg') type = 'image/svg+xml';
 			res.writeHead(200, { 'Content-Type': type });
@@ -183,9 +193,9 @@ const server = http.createServer((req, res) => {
 const io = new socketio.Server(server);
 io.on('connection', (socket) => {
 	socket.on('disconnect', () => {
-		for (i = 0; i < b; i++) {
-			for (j = 0; j < b; j++) {
-				var square = boardState[i][j];
+		for (let i = 0; i < b; i++) {
+			for (let j = 0; j < b; j++) {
+				let square = boardState[i][j];
 				if (square.owner === socket.id) {
 					boardState[i][j] = {
 						"piece": (square.piece === "king" ? "none" : square.piece),
@@ -201,7 +211,7 @@ io.on('connection', (socket) => {
 		boardState = stateOfBoard;
 		io.emit('boardState', boardState);
 	});
-	var kingSpawn = Math.floor(Math.random() * b * b);
+	let kingSpawn = Math.floor(Math.random() * b * b);
 	while (boardState[Math.floor(kingSpawn / b)][kingSpawn % b].piece !== "none") {
 		kingSpawn = Math.floor(Math.random() * b * b);
 	}

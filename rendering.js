@@ -1,22 +1,18 @@
-var board = document.createElement("canvas");
+let board = document.createElement("canvas");
 board.id = "board";
 board.width = innerWidth;
 board.height = innerHeight;
 document.body.appendChild(board);
-var ctx = board.getContext("2d");
 
 function tick() {
-	if (updateFrame < 1) {
-		requestAnimationFrame(tick);
-		return;
-	}
-	var ctx = board.getContext("2d");
+	if (updateFrame < 1) return requestAnimationFrame(tick);
+	let ctx = board.getContext("2d");
 	if (!isFloating) {
 		ctx.fillStyle = "#111";
 		ctx.fillRect(0, 0, innerWidth, innerHeight);
 	} else ctx.clearRect(0, 0, innerWidth, innerHeight);
-	for (i = 0; i < b; i++) {
-		for (j = 0; j < b; j++) {
+	for (let i = 0; i < b; i++) {
+		for (let j = 0; j < b; j++) {
 			let x1 = j * squareSize + scrollOffsetX;
 			let x2 = x1 + squareSize;
 			let y1 = i * squareSize + scrollOffsetY;
@@ -58,7 +54,7 @@ function tick() {
 				if (isFloating) ctx.globalCompositeOperation = "source-over";
 				if (boardState) {
 					if (boardState[i][j].piece !== "none") {
-						var img = new Image();
+						let img = new Image();
 						img.src = "data:image/svg+xml;base64," + btoa(svg[boardState[i][j].piece].split("[COLOR]").join("#" + boardState[i][j].color));
 						ctx.drawImage(img, 0, 0, 45, 45, (selectedSquare === j * b + i && isFloating ? mouseX - squareSize / 2 : x1), (selectedSquare === j * b + i && isFloating ? mouseY - squareSize / 2 : y1), (boardState[i][j].piece === "amazon" ? squareSize * 45 / 26 : squareSize), (boardState[i][j].piece === "amazon" ? squareSize * 45 / 26 : squareSize));
 					};
@@ -97,8 +93,8 @@ function tick() {
 	if ((timeout <= Date.now()) && (premove.length !== 0)) {
 		selectedSquare = premove[1] * b + premove[2];
 		mouseUp({
-			clientX: (premove[4] * squareSize) + scrollOffsetX,
-			clientY: (premove[5] * squareSize) + scrollOffsetY,
+			clientX: premove[4],
+			clientY: premove[5],
 			isPremove: true
 		});
 		premove = [];
@@ -115,14 +111,14 @@ window.addEventListener("resize", () => {
 	updateFrame = 60;
 });
 
-var selectedSquare = -1, mouseX, mouseY, isFloating = false, timeout = Date.now(), premove = [];
+let selectedSquare = -1, mouseX, mouseY, isFloating = false, timeout = Date.now(), premove = [];
 board.addEventListener("mousemove", e => {
 	mouseX = e.clientX;
 	mouseY = e.clientY;
 	updateFrame = 5;
 });
 board.addEventListener("mousedown", e => {
-	var x = Math.floor((e.clientX - scrollOffsetX) / squareSize), y = Math.floor((e.clientY - scrollOffsetY) / squareSize);
+	let x = Math.floor((e.clientX - scrollOffsetX) / squareSize), y = Math.floor((e.clientY - scrollOffsetY) / squareSize);
 	if ((x < 0) || (x > (b - 1)) || (y < 0) || (y > (b - 1))) return;
 	if (boardState[y][x].owner === socket.id) {
 		selectedSquare = x * b + y;
@@ -132,27 +128,28 @@ board.addEventListener("mousedown", e => {
 });
 
 function mouseUp(e) {
-	var x = Math.floor((e.clientX - scrollOffsetX) / squareSize), y = Math.floor((e.clientY - scrollOffsetY) / squareSize);
+	let x = (e.isPremove ? e.clientX : Math.floor((e.clientX - scrollOffsetX) / squareSize)), y = (e.isPremove ? e.clientY : Math.floor((e.clientY - scrollOffsetY) / squareSize));
 	if (selectedSquare === -1) { updateFrame = 5; return; }
 	if ((selectedSquare === x * b + y) && (!e.isPremove)) { isFloating = false; updateFrame = 5; return; }
 	if ((x < 0) || (x > (b - 1)) || (y < 0) || (y > (b - 1))) { selectedSquare = -1; updateFrame = 5; return; }
-	var selectedY = selectedSquare % b, selectedX = Math.floor(selectedSquare / b);
+	let selectedX = Math.floor(selectedSquare / b), selectedY = selectedSquare % b;
 	if (timeout > Date.now() && isLegalSquare(boardState[selectedY][selectedX], selectedX, selectedY, boardState[y][x], x, y, true)) {
 		premove = [boardState[selectedY][selectedX], selectedX, selectedY, boardState[y][x], x, y];
+		console.log(premove, timeout, Date.now());
 		isFloating = false;
 		selectedSquare = -1;
 		updateFrame = 5;
 		return;
 	}
 	if (isLegalSquare(boardState[selectedY][selectedX], selectedX, selectedY, boardState[y][x], x, y, false) === true) {
-		var newSpot = boardState[y][x];
+		let newSpot = boardState[y][x];
 		boardState[y][x] = {
 			piece: boardState[selectedY][selectedX].piece,
 			color: boardState[selectedY][selectedX].color,
 			owner: boardState[selectedY][selectedX].owner,
 			moved: true
 		};
-		boardState[selectedY][selectedX] = (newSpot.piece === "none" || newSpot.owner !== "" ? {
+		boardState[selectedY][selectedX] = (((newSpot.piece === "none") || (newSpot.owner !== "")) ? {
 			piece: "none",
 			color: "FFF",
 			owner: ""
@@ -167,8 +164,7 @@ function mouseUp(e) {
 	if (typeof isLegalSquare(boardState[selectedY][selectedX], selectedX, selectedY, boardState[y][x], x, y, false) === "string") {
 		// checks for ALL string isLegalSquare values, not just castling
 		// if other isLegalSquare string values are added, edit the above condition
-		var castle = isLegalSquare(boardState[selectedY][selectedX], selectedX, selectedY, boardState[y][x], x, y, false);
-		var castleSign = (castle === castle.toUpperCase() ? 1 : -1);
+		let castle = isLegalSquare(boardState[selectedY][selectedX], selectedX, selectedY, boardState[y][x], x, y, false), castleSign = (castle === castle.toUpperCase() ? 1 : -1);
 		boardState[y][x] = {
 			piece: boardState[selectedY][selectedX].piece,
 			color: boardState[selectedY][selectedX].color,
@@ -199,42 +195,42 @@ board.addEventListener("mouseup", mouseUp);
 
 function isLegalSquare(piece1, x1, y1, piece2, x2, y2, premove) {
 	if (piece1.owner !== socket.id || (piece2.owner === socket.id)) return false;
-	var dx = Math.abs(x2 - x1), dy = Math.abs(y2 - y1);
+	let dx = Math.abs(x2 - x1), dy = Math.abs(y2 - y1);
 	switch (piece1.piece) {
 		case "pawn":
 			if (((dx + dy === 1) && (premove || (piece2.piece === "none"))) || (dx * dy === 1) && (premove || (piece2.piece !== "none"))) return true;
 			if ((dx + dy !== 2) || (dx * dy !== 0) || (piece1.moved)) return false;
-			var signOfX = (dx === 0 ? 0 : (x2 - x1) / dx), signOfY = (dy === 0 ? 0 : (y2 - y1) / dy);
+			let signOfX = (dx === 0 ? 0 : (x2 - x1) / dx), signOfY = (dy === 0 ? 0 : (y2 - y1) / dy);
 			return (premove || (boardState[y1 + signOfY][x1 + signOfX]?.piece === "none") && (piece2.piece === "none"));
 		case "knight":
 			return (dx + dy === 3) && (dx * dy === 2);
 		case "bishop":
 			if (dx !== dy) return false;
 			if (premove) return true;
-			var bishopI, signOfX = (x2 - x1) / dx, signOfY = (y2 - y1) / dy;
-			for (bishopI = 1; bishopI < dx; bishopI++) {
-				if (boardState[y1 + bishopI * signOfY][x1 + bishopI * signOfX].piece !== "none") return false;
+			let signOfX = (x2 - x1) / dx, signOfY = (y2 - y1) / dy;
+			for (let i = 1; i < dx; i++) {
+				if (boardState[y1 + i * signOfY][x1 + i * signOfX].piece !== "none") return false;
 			}
 			return true;
 		case "rook":
 			if (dx * dy !== 0) return false;
 			if (premove) return true;
-			var rookI, signOfX = (dx === 0 ? 0 : (x2 - x1) / dx), signOfY = (dy === 0 ? 0 : (y2 - y1) / dy);
-			for (rookI = 1; rookI < dx + dy; rookI++) {
-				if (boardState[y1 + rookI * signOfY][x1 + rookI * signOfX].piece !== "none") return false;
+			let signOfX = (dx === 0 ? 0 : (x2 - x1) / dx), signOfY = (dy === 0 ? 0 : (y2 - y1) / dy);
+			for (let i = 1; i < dx + dy; i++) {
+				if (boardState[y1 + i * signOfY][x1 + i * signOfX].piece !== "none") return false;
 			}
 			return true;
 		case "queen":
 			if ((dx * dy !== 0) && (dx !== dy)) return false;
 			if (premove) return true;
-			var queenI, signOfX = (dx === 0 ? 0 : (x2 - x1) / dx), signOfY = (dy === 0 ? 0 : (y2 - y1) / dy);
-			for (queenI = 1; queenI < (dy / dx === 1 ? dx : dx + dy); queenI++) {
-				if (boardState[y1 + queenI * signOfY][x1 + queenI * signOfX].piece !== "none") return false;
+			let signOfX = (dx === 0 ? 0 : (x2 - x1) / dx), signOfY = (dy === 0 ? 0 : (y2 - y1) / dy);
+			for (let i = 1; i < (dy / dx === 1 ? dx : dx + dy); i++) {
+				if (boardState[y1 + i * signOfY][x1 + i * signOfX].piece !== "none") return false;
 			}
 			return true;
 		case "king":
 			if ((dx <= 1) && (dy <= 1)) return true;
-			var signOfX = (dx === 0 ? 0 : (x2 - x1) / dx);
+			let signOfX = (dx === 0 ? 0 : (x2 - x1) / dx);
 			if ((dx === 2) && (dy === 0) && premove) return true;
 			if ((dx !== 2) || (dy !== 0) || (boardState[y1][x1 + signOfX]?.piece !== "none") || (piece2.piece !== "none")) return false;
 			let off3 = boardState[y1][x1 + signOfX * 3], off4 = boardState[y1][x1 + signOfX * 4];
@@ -245,27 +241,27 @@ function isLegalSquare(piece1, x1, y1, piece2, x2, y2, premove) {
 			if ((dx + dy === 3) && (dx * dy === 2)) return true;
 			if (dx !== dy) return false;
 			if (premove) return true;
-			var archbishopI, signOfX = (x2 - x1) / dx, signOfY = (y2 - y1) / dy;
-			for (archbishopI = 1; archbishopI < dx; archbishopI++) {
-				if (boardState[y1 + archbishopI * signOfY][x1 + archbishopI * signOfX].piece !== "none") return false;
+			let signOfX = (x2 - x1) / dx, signOfY = (y2 - y1) / dy;
+			for (let i = 1; i < dx; i++) {
+				if (boardState[y1 + i * signOfY][x1 + i * signOfX].piece !== "none") return false;
 			}
 			return true;
 		case "chancellor":
 			if ((dx + dy === 3) && (dx * dy === 2)) return true;
 			if (dx * dy !== 0) return false;
 			if (premove) return true;
-			var chancellorI, signOfX = (dx === 0 ? 0 : (x2 - x1) / dx), signOfY = (dy === 0 ? 0 : (y2 - y1) / dy);
-			for (chancellorI = 1; chancellorI < dx + dy; chancellorI++) {
-				if (boardState[y1 + chancellorI * signOfY][x1 + chancellorI * signOfX].piece !== "none") return false;
+			let signOfX = (dx === 0 ? 0 : (x2 - x1) / dx), signOfY = (dy === 0 ? 0 : (y2 - y1) / dy);
+			for (let i = 1; i < dx + dy; i++) {
+				if (boardState[y1 + i * signOfY][x1 + i * signOfX].piece !== "none") return false;
 			}
 			return true;
 		case "amazon":
 			if ((dx + dy === 3) && (dx * dy === 2)) return true;
 			if ((dx * dy !== 0) && (dx !== dy)) return false;
 			if (premove) return true;
-			var amazonI, signOfX = (dx == 0 ? 0 : (x2 - x1) / dx), signOfY = (dy == 0 ? 0 : (y2 - y1) / dy);
-			for (amazonI = 1; amazonI < (dx == dy ? dx : dx + dy); amazonI++) {
-				if (boardState[y1 + amazonI * signOfY][x1 + amazonI * signOfX].piece !== "none") return false;
+			let signOfX = (dx == 0 ? 0 : (x2 - x1) / dx), signOfY = (dy == 0 ? 0 : (y2 - y1) / dy);
+			for (let i = 1; i < (dx == dy ? dx : dx + dy); i++) {
+				if (boardState[y1 + i * signOfY][x1 + i * signOfX].piece !== "none") return false;
 			}
 			return true;
 		case "general":

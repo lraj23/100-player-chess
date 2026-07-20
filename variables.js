@@ -13,7 +13,6 @@ const svg = {
 const char64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_".split("");
 const socket = io();
 
-var i, j;
-var boardState;
-var updateFrame = 60;
-const b = 8;
+let boardState;
+let updateFrame = 60;
+const b = 64;
