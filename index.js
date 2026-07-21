@@ -3,7 +3,7 @@ socket.on('connect', () => {
 	console.log(color);
 });
 
-socket.on('boardState', (state) => {
+socket.on('boardState', state => {
 	boardState = state;
 	let isKing = false;
 	for (let i = 0; i < b; i++) {
@@ -15,7 +15,7 @@ socket.on('boardState', (state) => {
 	updateFrame = 10;
 });
 
-socket.on('refocus', (location) => {
+socket.on('refocus', location => {
 	let x = location % b, y = Math.floor(location / b);
 	scrollOffsetX = -x * squareSize;
 	scrollOffsetX += innerWidth / 2 - squareSize / 2;

@@ -128,66 +128,20 @@ board.addEventListener("mousedown", e => {
 });
 
 function mouseUp(e) {
-	let x = (e.isPremove ? e.clientX : Math.floor((e.clientX - scrollOffsetX) / squareSize)), y = (e.isPremove ? e.clientY : Math.floor((e.clientY - scrollOffsetY) / squareSize));
+	let x2 = (e.isPremove ? e.clientX : Math.floor((e.clientX - scrollOffsetX) / squareSize)), y2 = (e.isPremove ? e.clientY : Math.floor((e.clientY - scrollOffsetY) / squareSize));
 	if (selectedSquare === -1) { updateFrame = 5; return; }
-	if ((selectedSquare === x * b + y) && (!e.isPremove)) { isFloating = false; updateFrame = 5; return; }
-	if ((x < 0) || (x > (b - 1)) || (y < 0) || (y > (b - 1))) { selectedSquare = -1; updateFrame = 5; return; }
-	let selectedX = Math.floor(selectedSquare / b), selectedY = selectedSquare % b;
-	if (timeout > Date.now() && isLegalSquare(boardState[selectedY][selectedX], selectedX, selectedY, boardState[y][x], x, y, true)) {
-		premove = [boardState[selectedY][selectedX], selectedX, selectedY, boardState[y][x], x, y];
+	if ((selectedSquare === x2 * b + y2) && (!e.isPremove)) { isFloating = false; updateFrame = 5; return; }
+	if ((x2 < 0) || (x2 > (b - 1)) || (y2 < 0) || (y2 > (b - 1))) { selectedSquare = -1; updateFrame = 5; return; }
+	let x1 = Math.floor(selectedSquare / b), y1 = selectedSquare % b;
+	if (timeout > Date.now() && isLegalSquare(boardState[y1][x1], x1, y1, boardState[y2][x2], x2, y2, true)) {
+		premove = [boardState[y1][x1], x1, y1, boardState[y2][x2], x2, y2];
 		console.log(premove, timeout, Date.now());
 		isFloating = false;
 		selectedSquare = -1;
 		updateFrame = 5;
 		return;
 	}
-	if (isLegalSquare(boardState[selectedY][selectedX], selectedX, selectedY, boardState[y][x], x, y, false) === true) {
-		let newSpot = boardState[y][x];
-		boardState[y][x] = {
-			piece: boardState[selectedY][selectedX].piece,
-			color: boardState[selectedY][selectedX].color,
-			owner: boardState[selectedY][selectedX].owner,
-			moved: true
-		};
-		boardState[selectedY][selectedX] = (((newSpot.piece === "none") || (newSpot.owner !== "")) ? {
-			piece: "none",
-			color: "FFF",
-			owner: ""
-		} : {
-			piece: newSpot.piece,
-			color: boardState[selectedY][selectedX].color,
-			owner: boardState[selectedY][selectedX].owner
-		});
-		timeout = Date.now() + 1000;
-		socket.emit('boardState', boardState);
-	}
-	if (typeof isLegalSquare(boardState[selectedY][selectedX], selectedX, selectedY, boardState[y][x], x, y, false) === "string") {
-		// checks for ALL string isLegalSquare values, not just castling
-		// if other isLegalSquare string values are added, edit the above condition
-		let castle = isLegalSquare(boardState[selectedY][selectedX], selectedX, selectedY, boardState[y][x], x, y, false), castleSign = (castle === castle.toUpperCase() ? 1 : -1);
-		boardState[y][x] = {
-			piece: boardState[selectedY][selectedX].piece,
-			color: boardState[selectedY][selectedX].color,
-			owner: boardState[selectedY][selectedX].owner
-		};
-		boardState[selectedY][selectedX + castleSign] = {
-			piece: boardState[selectedY][selectedX + castleSign * (castle.split("-").length + 1)].piece,
-			color: boardState[selectedY][selectedX].color,
-			owner: boardState[selectedY][selectedX].owner
-		};
-		boardState[selectedY][selectedX] = {
-			piece: "none",
-			color: "FFF",
-			owner: ""
-		};
-		boardState[selectedY][selectedX + castleSign * (castle.split("-").length + 1)] = {
-			piece: "none",
-			color: "FFF",
-			owner: ""
-		};
-		timeout = Date.now() + 1000;
-		socket.emit('boardState', boardState);
-	}
+	if (isLegalSquare(boardState[y1][x1], x1, y1, boardState[y2][x2], x2, y2, false)) socket.emit('move', [x1, y1, x2, y2], ts => timeout = ts);
 	selectedSquare = -1;
 	updateFrame = 5;
 }
@@ -197,14 +151,16 @@ function isLegalSquare(piece1, x1, y1, piece2, x2, y2, premove) {
 	if (piece1.owner !== socket.id || (piece2.owner === socket.id)) return false;
 	let dx = Math.abs(x2 - x1), dy = Math.abs(y2 - y1);
 	switch (piece1.piece) {
-		case "pawn":
+		case "pawn": {
 			if (((dx + dy === 1) && (premove || (piece2.piece === "none"))) || (dx * dy === 1) && (premove || (piece2.piece !== "none"))) return true;
 			if ((dx + dy !== 2) || (dx * dy !== 0) || (piece1.moved)) return false;
 			let signOfX = (dx === 0 ? 0 : (x2 - x1) / dx), signOfY = (dy === 0 ? 0 : (y2 - y1) / dy);
 			return (premove || (boardState[y1 + signOfY][x1 + signOfX]?.piece === "none") && (piece2.piece === "none"));
-		case "knight":
+		}
+		case "knight": {
 			return (dx + dy === 3) && (dx * dy === 2);
-		case "bishop":
+		}
+		case "bishop": {
 			if (dx !== dy) return false;
 			if (premove) return true;
 			let signOfX = (x2 - x1) / dx, signOfY = (y2 - y1) / dy;
@@ -212,7 +168,8 @@ function isLegalSquare(piece1, x1, y1, piece2, x2, y2, premove) {
 				if (boardState[y1 + i * signOfY][x1 + i * signOfX].piece !== "none") return false;
 			}
 			return true;
-		case "rook":
+		}
+		case "rook": {
 			if (dx * dy !== 0) return false;
 			if (premove) return true;
 			let signOfX = (dx === 0 ? 0 : (x2 - x1) / dx), signOfY = (dy === 0 ? 0 : (y2 - y1) / dy);
@@ -220,7 +177,8 @@ function isLegalSquare(piece1, x1, y1, piece2, x2, y2, premove) {
 				if (boardState[y1 + i * signOfY][x1 + i * signOfX].piece !== "none") return false;
 			}
 			return true;
-		case "queen":
+		}
+		case "queen": {
 			if ((dx * dy !== 0) && (dx !== dy)) return false;
 			if (premove) return true;
 			let signOfX = (dx === 0 ? 0 : (x2 - x1) / dx), signOfY = (dy === 0 ? 0 : (y2 - y1) / dy);
@@ -228,7 +186,8 @@ function isLegalSquare(piece1, x1, y1, piece2, x2, y2, premove) {
 				if (boardState[y1 + i * signOfY][x1 + i * signOfX].piece !== "none") return false;
 			}
 			return true;
-		case "king":
+		}
+		case "king": {
 			if ((dx <= 1) && (dy <= 1)) return true;
 			let signOfX = (dx === 0 ? 0 : (x2 - x1) / dx);
 			if ((dx === 2) && (dy === 0) && premove) return true;
@@ -237,7 +196,8 @@ function isLegalSquare(piece1, x1, y1, piece2, x2, y2, premove) {
 			if ((off3?.piece === "rook") && ((off3?.owner === piece1.owner) || (off3?.owner === ""))) return (signOfX === -1 ? "o-o" : "O-O");
 			if ((off3?.piece === "none") && (off4?.piece === "rook") && ((off4?.owner === piece1.owner) || (off4.owner === ""))) return (signOfX === -1 ? "o-o-o" : "O-O-O");
 			return false;
-		case "archbishop":
+		}
+		case "archbishop": {
 			if ((dx + dy === 3) && (dx * dy === 2)) return true;
 			if (dx !== dy) return false;
 			if (premove) return true;
@@ -246,7 +206,8 @@ function isLegalSquare(piece1, x1, y1, piece2, x2, y2, premove) {
 				if (boardState[y1 + i * signOfY][x1 + i * signOfX].piece !== "none") return false;
 			}
 			return true;
-		case "chancellor":
+		}
+		case "chancellor": {
 			if ((dx + dy === 3) && (dx * dy === 2)) return true;
 			if (dx * dy !== 0) return false;
 			if (premove) return true;
@@ -255,7 +216,8 @@ function isLegalSquare(piece1, x1, y1, piece2, x2, y2, premove) {
 				if (boardState[y1 + i * signOfY][x1 + i * signOfX].piece !== "none") return false;
 			}
 			return true;
-		case "amazon":
+		}
+		case "amazon": {
 			if ((dx + dy === 3) && (dx * dy === 2)) return true;
 			if ((dx * dy !== 0) && (dx !== dy)) return false;
 			if (premove) return true;
@@ -264,7 +226,9 @@ function isLegalSquare(piece1, x1, y1, piece2, x2, y2, premove) {
 				if (boardState[y1 + i * signOfY][x1 + i * signOfX].piece !== "none") return false;
 			}
 			return true;
-		case "general":
+		}
+		case "general": {
 			return ((dx + dy == 3) && (dx * dy == 2)) || ((dx <= 1) && (dy <= 1));
+		}
 	}
 }
