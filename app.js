@@ -216,26 +216,29 @@ io.on('connection', socket => {
 
 		let x1 = data[0], y1 = data[1], x2 = data[2], y2 = data[3];
 		if (isLegalSquare(...data, socket) === true) {
-			let newSpot = boardState[y2][x2];
+			let destination = boardState[y2][x2];
 			boardState[y2][x2] = {
 				piece: boardState[y1][x1].piece,
 				color: boardState[y1][x1].color,
 				owner: boardState[y1][x1].owner,
 				moved: true
 			};
-			boardState[y1][x1] = (((newSpot.piece === "none") || (newSpot.owner !== "")) ? {
+			boardState[y1][x1] = (((destination.piece === "none") || (destination.owner !== "")) ? {
 				piece: "none",
 				color: "FFF",
 				owner: ""
 			} : {
-				piece: newSpot.piece,
+				piece: destination.piece,
 				color: boardState[y1][x1].color,
 				owner: boardState[y1][x1].owner
 			});
 			timeout = Date.now() + 1000;
 			io.emit('boardState', boardState);
 
-			if (typeof callback === "function") callback(timeout);
+			if (typeof callback === "function") {
+				io.emit('audio', (destination.piece === "none" ? "move-opponent" : "capture"), x2, y2, socket.id);
+				callback(timeout, (destination.piece === "none" ? "move-self" : "capture"));
+			}
 		}
 		if (typeof isLegalSquare(...data, socket) === "string") {
 			// checks for ALL string isLegalSquare values, not just castling
@@ -264,7 +267,10 @@ io.on('connection', socket => {
 			timeout = Date.now() + 1000;
 			io.emit('boardState', boardState);
 
-			if (typeof callback === "function") callback(timeout);
+			if (typeof callback === "function") {
+				io.emit('audio', "castle", x2, y2, socket.id);
+				callback(timeout, "castle");
+			}
 		}
 	});
 	let kingSpawn = Math.floor(Math.random() * b * b);
@@ -278,6 +284,7 @@ io.on('connection', socket => {
 	};
 	io.emit('boardState', boardState);
 	socket.emit('refocus', kingSpawn);
+	io.emit('audio', "game-start", Math.floor(kingSpawn / b), kingSpawn % b, socket.id);
 });
 
 function isLegalSquare(x1, y1, x2, y2, socket) {

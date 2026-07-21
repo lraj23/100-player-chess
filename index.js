@@ -22,3 +22,13 @@ socket.on('refocus', location => {
 	scrollOffsetY = -y * squareSize;
 	scrollOffsetY += innerHeight / 2 - squareSize / 2;
 });
+
+socket.on('audio', (audio, x2, y2, id) => {
+	if (id === socket.id) return;
+	let distance = Math.sqrt(Math.pow(y2 - (innerHeight / 2 / squareSize) + (scrollOffsetY / squareSize), 2) + Math.pow(x2 - (innerWidth / 2 / squareSize) + (scrollOffsetX / squareSize), 2));
+	let effect = new Audio("./audio/" + audio + ".mp3");
+	effect.volume = Math.min(0.9, 0.9 / Math.pow(distance / 6, 2));
+	if (effect.volume < 0.1) return;
+	console.log(effect.volume, (innerWidth / 2 / squareSize) - (scrollOffsetX / squareSize), (innerHeight / 2 / squareSize) - (scrollOffsetY / squareSize), x2, y2, distance);
+	effect.play();
+});

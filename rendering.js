@@ -134,6 +134,7 @@ function mouseUp(e) {
 	if ((x2 < 0) || (x2 > (b - 1)) || (y2 < 0) || (y2 > (b - 1))) { selectedSquare = -1; updateFrame = 5; return; }
 	let x1 = Math.floor(selectedSquare / b), y1 = selectedSquare % b;
 	if (timeout > Date.now() && isLegalSquare(boardState[y1][x1], x1, y1, boardState[y2][x2], x2, y2, true)) {
+		(new Audio("./audio/premove.mp3")).play();
 		premove = [boardState[y1][x1], x1, y1, boardState[y2][x2], x2, y2];
 		console.log(premove, timeout, Date.now());
 		isFloating = false;
@@ -141,7 +142,11 @@ function mouseUp(e) {
 		updateFrame = 5;
 		return;
 	}
-	if (isLegalSquare(boardState[y1][x1], x1, y1, boardState[y2][x2], x2, y2, false)) socket.emit('move', [x1, y1, x2, y2], ts => timeout = ts);
+	if (isLegalSquare(boardState[y1][x1], x1, y1, boardState[y2][x2], x2, y2, false)) socket.emit('move', [x1, y1, x2, y2], (ts, audio) => {
+		timeout = ts;
+		(new Audio("./audio/" + audio + ".mp3")).play();
+	});
+	else (new Audio("./audio/illegal.mp3")).play();
 	selectedSquare = -1;
 	updateFrame = 5;
 }
