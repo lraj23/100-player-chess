@@ -193,10 +193,7 @@ const server = http.createServer((req, res) => {
 const io = new socketio.Server(server);
 io.on('connection', socket => {
 	let timeout = 0;
-	socket.on('disconnect', () => {
-		dissociate(socket.id);
-		io.emit('boardState', boardState);
-	});
+	socket.on('disconnect', () => dissociate(socket.id));
 	socket.on('move', (data, callback) => {
 		if (!Array.isArray(data)) return;
 		if (data.length !== 4) return;
@@ -229,7 +226,7 @@ io.on('connection', socket => {
 				if (destination.piece === "king") {
 					io.emit('audio', "game-end", x2, y2, destination.owner);
 					dissociate(destination.owner);
-					setTimeout(() => spawn(destination.owner), 2000);
+					setTimeout(() => spawn(destination.owner), 3000);
 				}
 				callback(timeout, (destination.piece === "none" ? "move-self" : "capture"));
 			}
@@ -296,6 +293,7 @@ io.on('connection', socket => {
 				}
 			}
 		}
+		io.emit('boardState', boardState);
 	}
 	io.emit('boardState', boardState);
 });
