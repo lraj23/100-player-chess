@@ -136,7 +136,6 @@ function mouseUp(e) {
 	if (timeout > Date.now() && isLegalSquare(boardState[y1][x1], x1, y1, boardState[y2][x2], x2, y2, true)) {
 		(new Audio("./audio/premove.mp3")).play();
 		premove = [boardState[y1][x1], x1, y1, boardState[y2][x2], x2, y2];
-		console.log(premove, timeout, Date.now());
 		isFloating = false;
 		selectedSquare = -1;
 		updateFrame = 5;

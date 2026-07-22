@@ -1,4 +1,4 @@
-let scrollOffsetX = 0, scrollOffsetY = 0, squareSize = 80;
+let squareSize = 80, scrollOffsetX = (innerWidth - b * squareSize) / 2, scrollOffsetY = (innerHeight - b * squareSize) / 2;
 
 let isShift = false;
 addEventListener("keydown", e => {

@@ -194,19 +194,8 @@ const io = new socketio.Server(server);
 io.on('connection', socket => {
 	let timeout = 0;
 	socket.on('disconnect', () => {
-		for (let i = 0; i < b; i++) {
-			for (let j = 0; j < b; j++) {
-				let square = boardState[i][j];
-				if (square.owner === socket.id) {
-					boardState[i][j] = {
-						"piece": (square.piece === "king" ? "none" : square.piece),
-						"color": "FFF",
-						"owner": ""
-					};
-					io.emit('boardState', boardState);
-				}
-			}
-		}
+		dissociate(socket.id);
+		io.emit('boardState', boardState);
 	});
 	socket.on('move', (data, callback) => {
 		if (!Array.isArray(data)) return;
@@ -237,6 +226,11 @@ io.on('connection', socket => {
 
 			if (typeof callback === "function") {
 				io.emit('audio', (destination.piece === "none" ? "move-opponent" : "capture"), x2, y2, socket.id);
+				if (destination.piece === "king") {
+					io.emit('audio', "game-end", x2, y2, destination.owner);
+					dissociate(destination.owner);
+					setTimeout(() => spawn(destination.owner), 2000);
+				}
 				callback(timeout, (destination.piece === "none" ? "move-self" : "capture"));
 			}
 		}
@@ -273,18 +267,37 @@ io.on('connection', socket => {
 			}
 		}
 	});
-	let kingSpawn = Math.floor(Math.random() * b * b);
-	while (boardState[Math.floor(kingSpawn / b)][kingSpawn % b].piece !== "none") {
-		kingSpawn = Math.floor(Math.random() * b * b);
+	socket.once('spawn', id => spawn(id));
+	function spawn(id) {
+		let kingSpawn = Math.floor(Math.random() * b * b);
+		while (boardState[Math.floor(kingSpawn / b)][kingSpawn % b].piece !== "none") {
+			kingSpawn = Math.floor(Math.random() * b * b);
+		}
+		boardState[Math.floor(kingSpawn / b)][kingSpawn % b] = {
+			piece: "king",
+			color: (char64.indexOf(id[0]) * 64 + char64.indexOf(id[1])).toString(16).toUpperCase().padStart(3, "0"),
+			owner: id
+		};
+		io.emit('boardState', boardState);
+		io.to(id).emit('refocus', kingSpawn);
+		io.to(id).emit('spawned');
+		io.emit('audio', "game-start", Math.floor(kingSpawn / b), kingSpawn % b, id);
 	}
-	boardState[Math.floor(kingSpawn / b)][kingSpawn % b] = {
-		piece: "king",
-		color: (char64.indexOf(socket.id[0]) * 64 + char64.indexOf(socket.id[1])).toString(16).toUpperCase().padStart(3, "0"),
-		owner: socket.id
-	};
+	function dissociate(id) {
+		for (let i = 0; i < b; i++) {
+			for (let j = 0; j < b; j++) {
+				let square = boardState[i][j];
+				if (square.owner === id) {
+					boardState[i][j] = {
+						"piece": (square.piece === "king" ? "none" : square.piece),
+						"color": "FFF",
+						"owner": ""
+					};
+				}
+			}
+		}
+	}
 	io.emit('boardState', boardState);
-	socket.emit('refocus', kingSpawn);
-	io.emit('audio', "game-start", Math.floor(kingSpawn / b), kingSpawn % b, socket.id);
 });
 
 function isLegalSquare(x1, y1, x2, y2, socket) {
