@@ -54,6 +54,8 @@ const url = require('url');
 const fs = require('fs');
 const pathfunc = require('path');
 const socketio = require('socket.io');
+const hexToColor = require('hex-color-to-color-name');
+let leaderboard = {};
 let boardState = [];
 // boardState = [
 // 	[
@@ -224,7 +226,11 @@ io.on('connection', socket => {
 			if (typeof callback === "function") {
 				io.emit('audio', (destination.piece === "none" ? "move-opponent" : "capture"), x2, y2, socket.id);
 				if (destination.piece === "king") {
+					delete leaderboard[destination.owner];
+					leaderboard[socket.id].kills++;
+					io.to(destination.owner).emit('refocus', y2 * b + x2);
 					io.emit('audio', "game-end", x2, y2, destination.owner);
+					io.emit('leaderboard', leaderboard);
 					dissociate(destination.owner);
 					setTimeout(() => spawn(destination.owner), 3000);
 				}
@@ -272,9 +278,14 @@ io.on('connection', socket => {
 		}
 		boardState[Math.floor(kingSpawn / b)][kingSpawn % b] = {
 			piece: "king",
-			color: (char64.indexOf(id[0]) * 64 + char64.indexOf(id[1])).toString(16).toUpperCase().padStart(3, "0"),
+			color: socketIDToColor(id),
 			owner: id
 		};
+		leaderboard[id] = {
+			name: hexToColor.GetColorName(socketIDToColor(id)).toLowerCase().split(" ").join("") + socketIDToColor(id),
+			kills: 0
+		};
+		io.emit('leaderboard', leaderboard);
 		io.emit('boardState', boardState);
 		io.to(id).emit('refocus', kingSpawn);
 		io.to(id).emit('spawned');
@@ -293,9 +304,15 @@ io.on('connection', socket => {
 				}
 			}
 		}
+		delete leaderboard[id];
+		io.emit('leaderboard', leaderboard);
 		io.emit('boardState', boardState);
 	}
+	function socketIDToColor(id) {
+		return (char64.indexOf(id[0]) * 64 + char64.indexOf(id[1])).toString(16).toUpperCase().padStart(3, "0");
+	}
 	io.emit('boardState', boardState);
+	io.emit('leaderboard', leaderboard);
 });
 
 function isLegalSquare(x1, y1, x2, y2, socket) {

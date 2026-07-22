@@ -49,3 +49,7 @@ socket.on('spawned', () => {
 	(new Audio("./audio/game-start.mp3")).play();
 	isEndScreen = false;
 });
+
+socket.on('leaderboard', stats => {
+	leaderboard = stats;
+});

@@ -14,5 +14,6 @@ const char64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_
 const socket = io();
 
 let boardState;
+let leaderboard;
 let updateFrame = 60;
 const b = 64;

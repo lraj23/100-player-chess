@@ -81,6 +81,24 @@ function tick() {
 		ctx.fillRect(0, 0, innerWidth, innerHeight);
 		ctx.globalCompositeOperation = "source-over";
 	}
+	if (leaderboard) {
+		ctx.fillStyle = "#0007";
+		ctx.fillRect(innerWidth - 350, 25, 325, innerHeight - 50);
+		let leaderboardRender = Object.keys(leaderboard).map(id => [leaderboard[id].name, leaderboard[id].kills]).sort((p1, p2) => p2[1] - p1[1]).filter((player, i) => i < 25 || player[0] === leaderboard[socket.id]?.name);
+		leaderboardRender.forEach((player, i) => {
+			ctx.font = "22px Atkinson Hyperlegible";
+			ctx.fillStyle = "#" + player[0].slice(-3);
+			ctx.strokeStyle = "white";
+			ctx.lineWidth = 1;
+			ctx.textAlign = "left";
+			ctx.textBaseline = "top";
+			ctx.strokeText(player[0], innerWidth - 340, 35 + i * 30);
+			ctx.fillText(player[0], innerWidth - 340, 35 + i * 30);
+			ctx.textAlign = "right";
+			ctx.strokeText(player[1], innerWidth - 35, 35 + i * 30);
+			ctx.fillText(player[1], innerWidth - 35, 35 + i * 30);
+		});
+	}
 	if (isEndScreen) {
 		ctx.font = "30px Atkinson Hyperlegible";
 		ctx.fillStyle = "white";

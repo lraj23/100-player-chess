@@ -1,6 +1,6 @@
 {
 	"name": "100-player-chess",
-	"version": "0.6.0",
+	"version": "0.7.0",
 	"description": "100 Player Chess is a multiplayer game that many people can play.",
 	"main": "app.js",
 	"scripts": {
@@ -17,6 +17,7 @@
 	"author": "Lavith Raj",
 	"license": "MIT",
 	"dependencies": {
+		"hex-color-to-color-name": "^2.0.1",
 		"nodemon": "^3.1.9",
 		"socket.io": "^4.8.1"
 	}
