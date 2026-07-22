@@ -16,7 +16,7 @@ addEventListener("keydown", e => {
 		let stillScroll = true;
 		function scroll() {
 			scrollOffsetY += scrollAmount * (isShift ? 3 : 1);
-			updateFrame = 5;
+			updateFrame += 5;
 			if (stillScroll) requestAnimationFrame(scroll);
 		}
 		requestAnimationFrame(scroll);
@@ -30,7 +30,7 @@ addEventListener("keydown", e => {
 		let stillScroll = true;
 		function scroll() {
 			scrollOffsetY -= scrollAmount * (isShift ? 3 : 1);
-			updateFrame = 5;
+			updateFrame += 5;
 			if (stillScroll) requestAnimationFrame(scroll);
 		}
 		requestAnimationFrame(scroll);
@@ -44,7 +44,7 @@ addEventListener("keydown", e => {
 		let stillScroll = true;
 		function scroll() {
 			scrollOffsetX += scrollAmount * (isShift ? 3 : 1);
-			updateFrame = 5;
+			updateFrame += 5;
 			if (stillScroll) requestAnimationFrame(scroll);
 		}
 		requestAnimationFrame(scroll);
@@ -58,7 +58,7 @@ addEventListener("keydown", e => {
 		let stillScroll = true;
 		function scroll() {
 			scrollOffsetX -= scrollAmount * (isShift ? 3 : 1);
-			updateFrame = 5;
+			updateFrame += 5;
 			if (stillScroll) requestAnimationFrame(scroll);
 		}
 		requestAnimationFrame(scroll);
@@ -72,7 +72,7 @@ addEventListener("keydown", e => {
 
 addEventListener("wheel", e => {
 	let zoomOut = e.deltaY > 0;
-	updateFrame = 5;
+	updateFrame += 5;
 	squareSize *= 0.96 ** (zoomOut ? 1 : -1);
 	scrollOffsetX *= 0.96 ** (zoomOut ? 1 : -1);
 	scrollOffsetX += window.innerWidth / 2 / (zoomOut ? 25 : -24);

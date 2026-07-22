@@ -22,9 +22,10 @@ socket.on('boardState', state => {
 	}
 	if (!isKing && !isEndScreen) {
 		(new Audio("./audio/game-end.mp3")).play();
-		isEndScreen = true;
+		isEndScreen = Date.now();
+		updateFrame += 5;
 	}
-	updateFrame = 10;
+	updateFrame += 5;
 });
 
 socket.on('refocus', location => {

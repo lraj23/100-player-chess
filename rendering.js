@@ -81,13 +81,27 @@ function tick() {
 		ctx.fillRect(0, 0, innerWidth, innerHeight);
 		ctx.globalCompositeOperation = "source-over";
 	}
+	if (isEndScreen) {
+		ctx.font = "30px Atkinson Hyperlegible";
+		ctx.fillStyle = "white";
+		ctx.strokeStyle = "black";
+		ctx.lineWidth = 2;
+		ctx.textAlign = "center";
+		ctx.textBaseline = "middle";
+		let offsetY = Math.sin((Date.now() - isEndScreen) * Math.PI / 2000) * 50;
+		ctx.strokeText("Your king was captured!", innerWidth / 2, innerHeight / 2 - 15 + offsetY);
+		ctx.fillText("Your king was captured!", innerWidth / 2, innerHeight / 2 - 15 + offsetY);
+		ctx.strokeText("Respawning...", innerWidth / 2, innerHeight / 2 + 15 + offsetY);
+		ctx.fillText("Respawning...", innerWidth / 2, innerHeight / 2 + 15 + offsetY);
+		updateFrame += 2;
+	}
 	if (timeout > Date.now()) {
 		ctx.fillStyle = "#000000" + Math.floor((timeout - Date.now()) * 256 / 1000).toString(16).toUpperCase().padStart(2, "0");
 		// ctx.fillStyle = "#ff000077";
 		ctx.fillRect(mouseX, mouseY, 100, 50);
 		ctx.fillStyle = "#" + (char64.indexOf(socket.id[0]) * 64 + char64.indexOf(socket.id[1])).toString(16).toUpperCase().padStart(3, "0") + (char64.indexOf(socket.id[0]) * 64 + char64.indexOf(socket.id[1])).toString(16).toUpperCase().padStart(3, "0") + Math.floor((timeout - Date.now()) * 256 / 1000).toString(16).toUpperCase().padStart(2, "0");
 		ctx.fillRect(mouseX, mouseY, 100 * (timeout - Date.now()) / 1000, 50);
-		updateFrame = 5;
+		updateFrame += 2;
 	}
 	updateFrame--;
 	if ((timeout <= Date.now()) && (premove.length !== 0)) {
@@ -108,14 +122,14 @@ window.addEventListener("resize", () => {
 	board.width = innerWidth.toString();
 	board.height = innerHeight.toString();
 	if ((squareSize >= innerWidth) || (squareSize >= innerHeight)) squareSize = Math.min(innerWidth, innerHeight) * 0.9;
-	updateFrame = 60;
+	updateFrame += 5;
 });
 
 let selectedSquare = -1, mouseX, mouseY, isFloating = false, timeout = Date.now(), premove = [];
 board.addEventListener("mousemove", e => {
 	mouseX = e.clientX;
 	mouseY = e.clientY;
-	updateFrame = 5;
+	updateFrame += 5;
 });
 board.addEventListener("mousedown", e => {
 	let x = Math.floor((e.clientX - scrollOffsetX) / squareSize), y = Math.floor((e.clientY - scrollOffsetY) / squareSize);
@@ -123,22 +137,22 @@ board.addEventListener("mousedown", e => {
 	if (boardState[y][x].owner === socket.id) {
 		selectedSquare = x * b + y;
 		isFloating = true;
-		updateFrame = 5;
+		updateFrame += 5;
 	}
 });
 
 function mouseUp(e) {
 	let x2 = (e.isPremove ? e.clientX : Math.floor((e.clientX - scrollOffsetX) / squareSize)), y2 = (e.isPremove ? e.clientY : Math.floor((e.clientY - scrollOffsetY) / squareSize));
-	if (selectedSquare === -1) { updateFrame = 5; return; }
-	if ((selectedSquare === x2 * b + y2) && (!e.isPremove)) { isFloating = false; updateFrame = 5; return; }
-	if ((x2 < 0) || (x2 > (b - 1)) || (y2 < 0) || (y2 > (b - 1))) { selectedSquare = -1; updateFrame = 5; return; }
+	if (selectedSquare === -1) { updateFrame += 5; return; }
+	if ((selectedSquare === x2 * b + y2) && (!e.isPremove)) { isFloating = false; updateFrame += 5; return; }
+	if ((x2 < 0) || (x2 > (b - 1)) || (y2 < 0) || (y2 > (b - 1))) { selectedSquare = -1; updateFrame += 5; return; }
 	let x1 = Math.floor(selectedSquare / b), y1 = selectedSquare % b;
 	if (timeout > Date.now() && isLegalSquare(boardState[y1][x1], x1, y1, boardState[y2][x2], x2, y2, true)) {
 		(new Audio("./audio/premove.mp3")).play();
 		premove = [boardState[y1][x1], x1, y1, boardState[y2][x2], x2, y2];
 		isFloating = false;
 		selectedSquare = -1;
-		updateFrame = 5;
+		updateFrame += 5;
 		return;
 	}
 	if (isLegalSquare(boardState[y1][x1], x1, y1, boardState[y2][x2], x2, y2, false)) socket.emit('move', [x1, y1, x2, y2], (ts, audio) => {
@@ -147,7 +161,7 @@ function mouseUp(e) {
 	});
 	else (new Audio("./audio/illegal.mp3")).play();
 	selectedSquare = -1;
-	updateFrame = 5;
+	updateFrame += 5;
 }
 board.addEventListener("mouseup", mouseUp);
 
