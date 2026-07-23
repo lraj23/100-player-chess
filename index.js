@@ -1,9 +1,11 @@
-const start = document.getElementById("start");
-start.onclick = () => {
-	start.remove();
-	socket.emit('spawn', socket.id);
-	(new Audio("./audio/game-start.mp3")).play();
-};
+socket.on('connect', () => {
+	const start = document.getElementById("start");
+	start.onclick = () => {
+		start.remove();
+		socket.emit('spawn', socket.id);
+		(new Audio("./audio/game-start.mp3")).play();
+	};
+});
 
 socket.on('spawned', () => {
 	(new Audio("./audio/game-start.mp3")).play();

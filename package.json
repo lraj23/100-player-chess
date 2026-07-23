@@ -1,6 +1,6 @@
 {
 	"name": "100-player-chess",
-	"version": "0.7.1",
+	"version": "0.7.2",
 	"description": "100 Player Chess is a multiplayer game that many people can play.",
 	"main": "app.js",
 	"type": "module",
