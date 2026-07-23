@@ -1,14 +1,14 @@
-socket.on('connect', () => {
-	let id = socket.id, color = (char64.indexOf(id[0]) * 64 + char64.indexOf(id[1])).toString(16).toUpperCase().padStart(3, "0");
-	console.log(color);
-});
-
-let start = document.getElementById("start");
+const start = document.getElementById("start");
 start.onclick = () => {
 	start.remove();
 	socket.emit('spawn', socket.id);
 	(new Audio("./audio/game-start.mp3")).play();
 };
+
+socket.on('spawned', () => {
+	(new Audio("./audio/game-start.mp3")).play();
+	isEndScreen = false;
+});
 
 let isEndScreen = false;
 socket.on('boardState', state => {
@@ -28,28 +28,13 @@ socket.on('boardState', state => {
 	updateFrame += 5;
 });
 
-socket.on('refocus', location => {
-	let x = location % b, y = Math.floor(location / b);
-	scrollOffsetX = -x * squareSize;
-	scrollOffsetX += innerWidth / 2 - squareSize / 2;
-	scrollOffsetY = -y * squareSize;
-	scrollOffsetY += innerHeight / 2 - squareSize / 2;
-});
+socket.on('leaderboard', stats => leaderboard = stats);
 
 socket.on('audio', (audio, x2, y2, id) => {
 	if (id === socket.id) return;
-	let distance = Math.sqrt(Math.pow(y2 - (innerHeight / 2 / squareSize) + (scrollOffsetY / squareSize), 2) + Math.pow(x2 - (innerWidth / 2 / squareSize) + (scrollOffsetX / squareSize), 2));
-	let effect = new Audio("./audio/" + audio + ".mp3");
+	const distance = Math.sqrt(Math.pow(y2 - (innerHeight / 2 / squareSize) + (scrollOffsetY / squareSize), 2) + Math.pow(x2 - (innerWidth / 2 / squareSize) + (scrollOffsetX / squareSize), 2));
+	const effect = new Audio("./audio/" + audio + ".mp3");
 	effect.volume = Math.min(0.9, 0.9 / Math.pow(distance / 6, 2));
 	if (effect.volume < 0.1) return;
 	effect.play();
-});
-
-socket.on('spawned', () => {
-	(new Audio("./audio/game-start.mp3")).play();
-	isEndScreen = false;
-});
-
-socket.on('leaderboard', stats => {
-	leaderboard = stats;
 });

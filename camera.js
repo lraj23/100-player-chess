@@ -79,3 +79,11 @@ addEventListener("wheel", e => {
 	scrollOffsetY *= 0.96 ** (zoomOut ? 1 : -1);
 	scrollOffsetY += window.innerHeight / 2 / (zoomOut ? 25 : -24);
 });
+
+socket.on('refocus', location => {
+	let x = location % b, y = Math.floor(location / b);
+	scrollOffsetX = -x * squareSize;
+	scrollOffsetX += innerWidth / 2 - squareSize / 2;
+	scrollOffsetY = -y * squareSize;
+	scrollOffsetY += innerHeight / 2 - squareSize / 2;
+});

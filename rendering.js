@@ -1,4 +1,4 @@
-let board = document.createElement("canvas");
+const board = document.createElement("canvas");
 board.id = "board";
 board.width = innerWidth;
 board.height = innerHeight;
@@ -80,6 +80,11 @@ function tick() {
 		ctx.fillStyle = "#111";
 		ctx.fillRect(0, 0, innerWidth, innerHeight);
 		ctx.globalCompositeOperation = "source-over";
+		if (selectedSquare > -1) {
+			let img = new Image();
+			img.src = "data:image/svg+xml;base64," + btoa(svg[boardState[selectedSquare % b][Math.floor(selectedSquare / b)].piece].split("[COLOR]").join("#" + boardState[selectedSquare % b][Math.floor(selectedSquare / b)].color));
+			ctx.drawImage(img, 0, 0, 45, 45, mouseX - squareSize / 2, mouseY - squareSize / 2, (boardState[selectedSquare % b][Math.floor(selectedSquare / b)].piece === "amazon" ? squareSize * 45 / 26 : squareSize), (boardState[selectedSquare % b][Math.floor(selectedSquare / b)].piece === "amazon" ? squareSize * 45 / 26 : squareSize));
+		}
 	}
 	if (leaderboard) {
 		ctx.fillStyle = "#0007";
