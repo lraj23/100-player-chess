@@ -155,6 +155,7 @@ board.addEventListener("mousemove", e => {
 	updateFrame += 5;
 });
 board.addEventListener("mousedown", e => {
+	if (!boardState) return;
 	let x = Math.floor((e.clientX - scrollOffsetX) / squareSize), y = Math.floor((e.clientY - scrollOffsetY) / squareSize);
 	if ((x < 0) || (x > (b - 1)) || (y < 0) || (y > (b - 1))) return;
 	if (boardState[y][x].owner === socket.id) {
@@ -230,8 +231,8 @@ function isLegalSquare(piece1, x1, y1, piece2, x2, y2, premove) {
 		}
 		case "king": {
 			if ((dx <= 1) && (dy <= 1)) return true;
+			if (piece1.moved || piece2.moved) return false;
 			let signOfX = (dx === 0 ? 0 : (x2 - x1) / dx);
-			if ((dx === 2) && (dy === 0) && premove) return true;
 			if ((dx !== 2) || (dy !== 0) || (boardState[y1][x1 + signOfX]?.piece !== "none") || (piece2.piece !== "none")) return false;
 			let off3 = boardState[y1][x1 + signOfX * 3], off4 = boardState[y1][x1 + signOfX * 4];
 			if ((off3?.piece === "rook") && ((off3?.owner === piece1.owner) || (off3?.owner === ""))) return (signOfX === -1 ? "o-o" : "O-O");

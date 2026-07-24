@@ -22,7 +22,7 @@ const probabilities2 = {
 	pawn: 120,
 	none: 1600
 };
-const probabilities = probabilities1;
+const probabilities = probabilities2;
 const char64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_".split("");
 const b = 64;
 const leaderboard = {};
@@ -51,14 +51,14 @@ const weightsToPercents = weights => { // developer visualization purposes, not 
 };
 const socketIDToColor = id => (char64.indexOf(id[0]) * 64 + char64.indexOf(id[1])).toString(16).toUpperCase().padStart(3, "0");
 const isLegalSquare = (x1, y1, x2, y2, id) => {
-	let piece1 = boardState[y1][x1], piece2 = boardState[y2][x2];
+	const piece1 = boardState[y1][x1], piece2 = boardState[y2][x2];
 	if (piece1.owner !== id || (piece2.owner === id)) return false;
-	let dx = Math.abs(x2 - x1), dy = Math.abs(y2 - y1);
+	const dx = Math.abs(x2 - x1), dy = Math.abs(y2 - y1);
 	switch (piece1.piece) {
 		case "pawn": {
 			if (((dx + dy === 1) && (piece2.piece === "none")) || (dx * dy === 1) && (piece2.piece !== "none")) return true;
 			if ((dx + dy !== 2) || (dx * dy !== 0) || (piece1.moved)) return false;
-			let signOfX = (dx === 0 ? 0 : (x2 - x1) / dx), signOfY = (dy === 0 ? 0 : (y2 - y1) / dy);
+			const signOfX = (dx === 0 ? 0 : (x2 - x1) / dx), signOfY = (dy === 0 ? 0 : (y2 - y1) / dy);
 			return (boardState[y1 + signOfY][x1 + signOfX]?.piece === "none") && (piece2.piece === "none");
 		}
 		case "knight": {
@@ -66,7 +66,7 @@ const isLegalSquare = (x1, y1, x2, y2, id) => {
 		}
 		case "bishop": {
 			if (dx !== dy) return false;
-			let signOfX = (x2 - x1) / dx, signOfY = (y2 - y1) / dy;
+			const signOfX = (x2 - x1) / dx, signOfY = (y2 - y1) / dy;
 			for (let i = 1; i < dx; i++) {
 				if (boardState[y1 + i * signOfY][x1 + i * signOfX].piece !== "none") return false;
 			}
@@ -74,7 +74,7 @@ const isLegalSquare = (x1, y1, x2, y2, id) => {
 		}
 		case "rook": {
 			if (dx * dy !== 0) return false;
-			let signOfX = (dx === 0 ? 0 : (x2 - x1) / dx), signOfY = (dy === 0 ? 0 : (y2 - y1) / dy);
+			const signOfX = (dx === 0 ? 0 : (x2 - x1) / dx), signOfY = (dy === 0 ? 0 : (y2 - y1) / dy);
 			for (let i = 1; i < dx + dy; i++) {
 				if (boardState[y1 + i * signOfY][x1 + i * signOfX].piece !== "none") return false;
 			}
@@ -82,7 +82,7 @@ const isLegalSquare = (x1, y1, x2, y2, id) => {
 		}
 		case "queen": {
 			if ((dx * dy !== 0) && (dx !== dy)) return false;
-			let signOfX = (dx === 0 ? 0 : (x2 - x1) / dx), signOfY = (dy === 0 ? 0 : (y2 - y1) / dy);
+			const signOfX = (dx === 0 ? 0 : (x2 - x1) / dx), signOfY = (dy === 0 ? 0 : (y2 - y1) / dy);
 			for (let i = 1; i < (dy / dx === 1 ? dx : dx + dy); i++) {
 				if (boardState[y1 + i * signOfY][x1 + i * signOfX].piece !== "none") return false;
 			}
@@ -90,7 +90,8 @@ const isLegalSquare = (x1, y1, x2, y2, id) => {
 		}
 		case "king": {
 			if ((dx <= 1) && (dy <= 1)) return true;
-			let signOfX = (dx === 0 ? 0 : (x2 - x1) / dx);
+			if (piece1.moved || piece2.moved) return false;
+			const signOfX = (dx === 0 ? 0 : (x2 - x1) / dx);
 			if ((dx !== 2) || (dy !== 0) || (boardState[y1][x1 + signOfX]?.piece !== "none") || (piece2.piece !== "none")) return false;
 			let off3 = boardState[y1][x1 + signOfX * 3], off4 = boardState[y1][x1 + signOfX * 4];
 			if ((off3?.piece === "rook") && ((off3?.owner === piece1.owner) || (off3?.owner === ""))) return (signOfX === -1 ? "o-o" : "O-O");
@@ -100,7 +101,7 @@ const isLegalSquare = (x1, y1, x2, y2, id) => {
 		case "archbishop": {
 			if ((dx + dy === 3) && (dx * dy === 2)) return true;
 			if (dx !== dy) return false;
-			let signOfX = (x2 - x1) / dx, signOfY = (y2 - y1) / dy;
+			const signOfX = (x2 - x1) / dx, signOfY = (y2 - y1) / dy;
 			for (let i = 1; i < dx; i++) {
 				if (boardState[y1 + i * signOfY][x1 + i * signOfX].piece !== "none") return false;
 			}
@@ -109,7 +110,7 @@ const isLegalSquare = (x1, y1, x2, y2, id) => {
 		case "chancellor": {
 			if ((dx + dy === 3) && (dx * dy === 2)) return true;
 			if (dx * dy !== 0) return false;
-			let signOfX = (dx === 0 ? 0 : (x2 - x1) / dx), signOfY = (dy === 0 ? 0 : (y2 - y1) / dy);
+			const signOfX = (dx === 0 ? 0 : (x2 - x1) / dx), signOfY = (dy === 0 ? 0 : (y2 - y1) / dy);
 			for (let i = 1; i < dx + dy; i++) {
 				if (boardState[y1 + i * signOfY][x1 + i * signOfX].piece !== "none") return false;
 			}
@@ -118,7 +119,7 @@ const isLegalSquare = (x1, y1, x2, y2, id) => {
 		case "amazon": {
 			if ((dx + dy === 3) && (dx * dy === 2)) return true;
 			if ((dx * dy !== 0) && (dx !== dy)) return false;
-			let signOfX = (dx == 0 ? 0 : (x2 - x1) / dx), signOfY = (dy == 0 ? 0 : (y2 - y1) / dy);
+			const signOfX = (dx == 0 ? 0 : (x2 - x1) / dx), signOfY = (dy == 0 ? 0 : (y2 - y1) / dy);
 			for (let i = 1; i < (dx == dy ? dx : dx + dy); i++) {
 				if (boardState[y1 + i * signOfY][x1 + i * signOfX].piece !== "none") return false;
 			}

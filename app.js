@@ -102,12 +102,14 @@ io.on('connection', socket => {
 			boardState[y2][x2] = {
 				piece: boardState[y1][x1].piece,
 				color: boardState[y1][x1].color,
-				owner: boardState[y1][x1].owner
+				owner: boardState[y1][x1].owner,
+				moved: true
 			};
 			boardState[y1][x1 + castleSign] = {
 				piece: boardState[y1][x1 + castleSign * (castle.split("-").length + 1)].piece,
 				color: boardState[y1][x1].color,
-				owner: boardState[y1][x1].owner
+				owner: boardState[y1][x1].owner,
+				moved: true
 			};
 			boardState[y1][x1] = {
 				piece: "none",
@@ -128,7 +130,7 @@ io.on('connection', socket => {
 			}
 		}
 	});
-	socket.once('spawn', id => spawn(id));
+	socket.once('spawn', id => spawn(socket.id));
 	const spawn = id => {
 		let kingSpawn = Math.floor(Math.random() * b * b);
 		while (boardState[Math.floor(kingSpawn / b)][kingSpawn % b].piece !== "none") {

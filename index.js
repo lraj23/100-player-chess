@@ -3,7 +3,6 @@ socket.on('connect', () => {
 	start.onclick = () => {
 		start.remove();
 		socket.emit('spawn', socket.id);
-		(new Audio("./audio/game-start.mp3")).play();
 	};
 });
 
