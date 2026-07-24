@@ -1,6 +1,6 @@
 socket.on('connect', () => {
-	const start = document.getElementById("start");
-	start.onclick = () => {
+	const start = document.getElementById("start"), play = document.getElementById("play");
+	play.onclick = () => {
 		start.remove();
 		socket.emit('spawn', socket.id);
 	};
@@ -14,7 +14,7 @@ socket.on('spawned', () => {
 let isEndScreen = false;
 socket.on('boardState', state => {
 	boardState = state;
-	if (document.getElementById("start")) return;
+	if (document.getElementById("play")) return;
 	let isKing = false;
 	for (let i = 0; i < b; i++) {
 		for (let j = 0; j < b; j++) {

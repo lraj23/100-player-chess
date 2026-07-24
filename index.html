@@ -7,7 +7,14 @@
 		<title>100 Player Chess</title>
 	</head>
 	<body>
-		<button id="start">START</button>
+		<div id="start">
+			<div id="start-overlay"></div>
+			<div id="start-menu">
+				<h1 id="title">100 Player Chess</h1>
+				<button id="play">PLAY</button>
+				<p id="credit">INSPIRED BY <a href="https://www.youtube.com/watch?v=Ehj5F--mffU" target="_blank">S<span class="SC">WAN</span>'<span class="SC">S</span> 10000 P<span class="SC">LAYER</span> C<span class="SC">HESS</span></a></p>
+			</div>
+		</div>
 		<script src="/socket.io/socket.io.js"></script>
 		<script src="./variables.js"></script>
 		<script src="./camera.js"></script>
